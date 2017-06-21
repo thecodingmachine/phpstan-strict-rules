@@ -25,5 +25,10 @@
         "psr-4": {
             "TheCodingMachine\\PHPStan\\": "tests/"
         }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.7-dev"
+        }
     }
 }
