@@ -1,0 +1,29 @@
+{
+    "name": "thecodingmachine/phpstan-strict-rules",
+    "description": "A set of additional rules for PHPStan based on best practices followed at TheCodingMachine",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "David Négrier",
+            "email": "d.negrier@thecodingmachine.com"
+        }
+    ],
+    "require": {
+        "phpstan/phpstan": "^0.7.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^6.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "TheCodingMachine\\PHPStan\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "classmap": ["vendor/phpstan/phpstan/tests/PHPStan", "vendor/phpstan/phpstan/tests/TestCase.php"],
+        "psr-4": {
+            "TheCodingMachine\\PHPStan\\": "tests/"
+        }
+    }
+}
