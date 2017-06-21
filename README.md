@@ -15,12 +15,12 @@ They are more "strict" than the default PHPStan rules and some may be controvers
 - When throwing an exception inside a catch block, [you should pass the catched exception as the "previous" exception](http://bestpractices.thecodingmachine.com/php/error_handling.html#wrapping-an-exception-do-not-lose-the-previous-exception)
 
 
-    
-    // TODO: Other ideas:
+### Work-in-progress
+
     // Don't use superglobals (__GET __POST)...
     // Always provide a "default" in a switch statement (and throw an exception if unexpected)
     // Never use public properties
-    // Force type hinting on all methods, starting with PHP 7.1 (or mixed must be passed in @param docblock)
+    // Force type hinting on all methods, starting with PHP 7.1 (or mixed must be passed in @param docblock to explain that we expect absolutely anything)
 
 ## Installation
 
@@ -36,17 +36,16 @@ Now, edit you `phpstan.neon` file and add these rules:
 
 ```yml
 services:
-	-
-		class: TheCodingMachine\PHPStan\Rules\Exceptions\ThrowMustBundlePreviousExceptionRule
-		tags:
-			- phpstan.rules.rule
-	-
-		class: TheCodingMachine\PHPStan\Rules\Exceptions\DoNotThrowExceptionBaseClassRule
-		tags:
-			- phpstan.rules.rule
-	-
-		class: TheCodingMachine\PHPStan\Rules\Exceptions\EmptyExceptionRule
-		tags:
-			- phpstan.rules.rule
-
+  -
+    class: TheCodingMachine\PHPStan\Rules\Exceptions\ThrowMustBundlePreviousExceptionRule
+    tags:
+      - phpstan.rules.rule
+  -
+    class: TheCodingMachine\PHPStan\Rules\Exceptions\DoNotThrowExceptionBaseClassRule
+    tags:
+      - phpstan.rules.rule
+  -
+    class: TheCodingMachine\PHPStan\Rules\Exceptions\EmptyExceptionRule
+    tags:
+      - phpstan.rules.rule
 ```
