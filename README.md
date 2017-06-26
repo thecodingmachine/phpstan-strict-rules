@@ -14,6 +14,14 @@ They are more "strict" than the default PHPStan rules and some may be controvers
 - You should not have empty catch statements
 - When throwing an exception inside a catch block, [you should pass the catched exception as the "previous" exception](http://bestpractices.thecodingmachine.com/php/error_handling.html#wrapping-an-exception-do-not-lose-the-previous-exception)
 
+### PHPDoc related rules
+
+This is a PHP 7.1+ rule:
+
+- You should use type-hinting when possible
+- If not possible, you should use a Docblock to specify the type
+- If type-hinting against an array, you should use a Docblock to further explain the content of the array
+
 
 ### Work-in-progress
 
@@ -46,6 +54,14 @@ services:
       - phpstan.rules.rule
   -
     class: TheCodingMachine\PHPStan\Rules\Exceptions\EmptyExceptionRule
+    tags:
+      - phpstan.rules.rule
+  -
+    class: TheCodingMachine\PHPStan\Rules\TypeHints\MissingTypeHintInFunctionRule
+    tags:
+      - phpstan.rules.rule
+  -
+    class: TheCodingMachine\PHPStan\Rules\TypeHints\MissingTypeHintInMethodRule
     tags:
       - phpstan.rules.rule
 ```

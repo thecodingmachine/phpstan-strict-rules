@@ -9,6 +9,9 @@
 	beStrictAboutTodoAnnotatedTests="true"
 	failOnRisky="true"
 	failOnWarning="true"
+	convertErrorsToExceptions="true"
+	convertNoticesToExceptions="true"
+	convertWarningsToExceptions="true"
 >
 	<testsuites>
 		<testsuite name="Test suite">
@@ -27,6 +30,7 @@
 			showUncoveredFiles="true"
 			showOnlySummary="true"
 		/>
-		<log type="coverage-clover" target="tmp/clover.xml"/>
+		<log type="coverage-html" target="build/coverage" charset="UTF-8" yui="true" highlight="true"/>
+		<log type="coverage-clover" target="build/logs/clover.xml"/>
 	</logging>
 </phpunit>
