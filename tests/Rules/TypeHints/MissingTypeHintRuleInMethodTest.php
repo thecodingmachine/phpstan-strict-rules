@@ -14,7 +14,7 @@ class MissingTypeHintRuleInMethodTest extends \PHPStan\Rules\AbstractRuleTest
 
 	public function testCheckCatchedException()
 	{
-        require_once __DIR__.'/data/typehints.php';
+        require_once __DIR__.'/data/typehints_in_methods.php';
 
         $this->analyse([__DIR__ . '/data/typehints_in_methods.php'], [
 			[

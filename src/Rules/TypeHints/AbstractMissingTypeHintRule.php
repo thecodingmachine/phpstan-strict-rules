@@ -4,8 +4,14 @@
 namespace TheCodingMachine\PHPStan\Rules\TypeHints;
 
 
+use BetterReflection\Reflection\ReflectionClass;
+use BetterReflection\Reflection\ReflectionMethod;
 use BetterReflection\Reflection\ReflectionParameter;
-use BetterReflection\Util\FindReflectionOnLine;
+use BetterReflection\SourceLocator\Type\AggregateSourceLocator;
+use BetterReflection\SourceLocator\Type\AutoloadSourceLocator;
+use BetterReflection\SourceLocator\Type\EvaledCodeSourceLocator;
+use BetterReflection\SourceLocator\Type\PhpInternalSourceLocator;
+use TheCodingMachine\PHPStan\BetterReflection\FindReflectionOnLine;
 use phpDocumentor\Reflection\Type;
 use phpDocumentor\Reflection\Types\Array_;
 use phpDocumentor\Reflection\Types\Boolean;
@@ -51,9 +57,14 @@ class AbstractMissingTypeHintRule implements Rule
     public function processNode(Node $node, Scope $scope): array
     {
         // TODO: improve performance by caching better reflection results.
-        $finder = new FindReflectionOnLine();
+        $finder = FindReflectionOnLine::buildDefaultFinder();
 
         $reflection = $finder($scope->getFile(), $node->getLine());
+
+        // If the method implements/extends another method, we have no choice on the signature so let's bypass this check.
+        if ($reflection instanceof ReflectionMethod && $this->isInherited($reflection)) {
+            return [];
+        }
 
         $errors = [];
 
@@ -138,7 +149,6 @@ class AbstractMissingTypeHintRule implements Rule
             return sprintf('Parameter $%s can be type-hinted to "%s".', $parameter->getName(), $nativeTypehint);
         }
 
-        // TODO: cancel if the method is implemented from an interface or overrides another method
         // TODO: return types
 
         return null;
@@ -225,5 +235,25 @@ class AbstractMissingTypeHintRule implements Rule
         return array_filter($docBlockTypeHints, function($item) {
             return !$item instanceof Null_;
         });
+    }
+
+    private function isInherited(ReflectionMethod $method, ReflectionClass $class = null): bool
+    {
+        if ($class === null) {
+            $class = $method->getDeclaringClass();
+        }
+        $interfaces = $class->getInterfaces();
+        foreach ($interfaces as $interface) {
+            if ($interface->hasMethod($method->getName())) {
+                return true;
+            }
+        }
+
+        $parentClass = $class->getParentClass();
+        if ($parentClass !== null) {
+            return $this->isInherited($method, $parentClass);
+        }
+
+        return false;
     }
 }
