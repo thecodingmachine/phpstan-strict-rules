@@ -1,3 +1,12 @@
+[![Latest Stable Version](https://poser.pugx.org/thecodingmachine/phpstan-strict-rules/v/stable)](https://packagist.org/packages/thecodingmachine/phpstan-strict-rules)
+[![Total Downloads](https://poser.pugx.org/thecodingmachine/phpstan-strict-rules/downloads)](https://packagist.org/packages/thecodingmachine/phpstan-strict-rules)
+[![Latest Unstable Version](https://poser.pugx.org/thecodingmachine/phpstan-strict-rules/v/unstable)](https://packagist.org/packages/thecodingmachine/phpstan-strict-rules)
+[![License](https://poser.pugx.org/thecodingmachine/phpstan-strict-rules/license)](https://packagist.org/packages/thecodingmachine/phpstan-strict-rules)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/thecodingmachine/phpstan-strict-rules/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/thecodingmachine/phpstan-strict-rules/?branch=master)
+[![Build Status](https://travis-ci.org/thecodingmachine/phpstan-strict-rules.svg?branch=master)](https://travis-ci.org/thecodingmachine/phpstan-strict-rules)
+[![Coverage Status](https://coveralls.io/repos/thecodingmachine/phpstan-strict-rules/badge.svg?branch=master&service=github)](https://coveralls.io/github/thecodingmachine/phpstan-strict-rules?branch=master)
+
+
 TheCodingMachine's additional rules for PHPStan
 ===============================================
 
