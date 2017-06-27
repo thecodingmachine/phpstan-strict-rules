@@ -1,3 +1,12 @@
+[![Latest Stable Version](https://poser.pugx.org/thecodingmachine/phpstan-strict-rules/v/stable)](https://packagist.org/packages/thecodingmachine/phpstan-strict-rules)
+[![Total Downloads](https://poser.pugx.org/thecodingmachine/phpstan-strict-rules/downloads)](https://packagist.org/packages/thecodingmachine/phpstan-strict-rules)
+[![Latest Unstable Version](https://poser.pugx.org/thecodingmachine/phpstan-strict-rules/v/unstable)](https://packagist.org/packages/thecodingmachine/phpstan-strict-rules)
+[![License](https://poser.pugx.org/thecodingmachine/phpstan-strict-rules/license)](https://packagist.org/packages/thecodingmachine/phpstan-strict-rules)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/thecodingmachine/phpstan-strict-rules/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/thecodingmachine/phpstan-strict-rules/?branch=master)
+[![Build Status](https://travis-ci.org/thecodingmachine/phpstan-strict-rules.svg?branch=master)](https://travis-ci.org/thecodingmachine/phpstan-strict-rules)
+[![Coverage Status](https://coveralls.io/repos/thecodingmachine/phpstan-strict-rules/badge.svg?branch=master&service=github)](https://coveralls.io/github/thecodingmachine/phpstan-strict-rules?branch=master)
+
+
 TheCodingMachine's additional rules for PHPStan
 ===============================================
 
@@ -14,6 +23,15 @@ They are more "strict" than the default PHPStan rules and some may be controvers
 - You should not have empty catch statements
 - When throwing an exception inside a catch block, [you should pass the catched exception as the "previous" exception](http://bestpractices.thecodingmachine.com/php/error_handling.html#wrapping-an-exception-do-not-lose-the-previous-exception)
 
+### Type-hinting related rules
+
+This is a PHP 7.1+ rule:
+
+- You should use type-hinting when possible
+- If not possible, you should use a Docblock to specify the type
+- If type-hinting against an array, you should use a Docblock to further explain the content of the array
+
+[More about type-hinting related rules...](doc/typehinting_rules.md)
 
 ### Work-in-progress
 
@@ -46,6 +64,14 @@ services:
       - phpstan.rules.rule
   -
     class: TheCodingMachine\PHPStan\Rules\Exceptions\EmptyExceptionRule
+    tags:
+      - phpstan.rules.rule
+  -
+    class: TheCodingMachine\PHPStan\Rules\TypeHints\MissingTypeHintInFunctionRule
+    tags:
+      - phpstan.rules.rule
+  -
+    class: TheCodingMachine\PHPStan\Rules\TypeHints\MissingTypeHintInMethodRule
     tags:
       - phpstan.rules.rule
 ```

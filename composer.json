@@ -10,10 +10,13 @@
         }
     ],
     "require": {
-        "phpstan/phpstan": "^0.7.0"
+        "php": ">=7.1",
+        "phpstan/phpstan": "^0.7.0",
+        "roave/better-reflection": "^1.2.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^6.2"
+        "phpunit/phpunit": "^6.2",
+        "satooshi/php-coveralls": "^1.0"
     },
     "autoload": {
         "psr-4": {
