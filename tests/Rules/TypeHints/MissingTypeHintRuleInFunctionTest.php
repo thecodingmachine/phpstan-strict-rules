@@ -18,28 +18,52 @@ class MissingTypeHintRuleInFunctionTest extends \PHPStan\Rules\AbstractRuleTest
 
         $this->analyse([__DIR__ . '/data/typehints.php'], [
 			[
-				'Parameter $no_type_hint has no type-hint and no @param annotation.',
+				'In function "test", parameter $no_type_hint has no type-hint and no @param annotation.',
 				3,
 			],
             [
-                'Parameter $type_hintable can be type-hinted to "?string".',
-                11,
+                'In function "test", there is no return type and no @return annotation.',
+                3,
             ],
             [
-                'Parameter $type_hintable can be type-hinted to "\DateTimeInterface".',
-                19,
+                'In function "test2", parameter $type_hintable can be type-hinted to "?string".',
+                12,
             ],
             [
-                'Parameter $type_hintable can be type-hinted to "array".',
-                27,
+                'In function "test2", a "string" return type can be added.',
+                12,
             ],
             [
-                'Parameter $better_type_hint type is "array". Please provide a @param annotation to further speciy the type of the array. For instance: @param int[] $better_type_hint',
-                40,
+                'In function "test3", parameter $type_hintable can be type-hinted to "\DateTimeInterface".',
+                21,
             ],
             [
-                'Parameter $param type is type-hinted to "string" but the @param annotation says it is a "int". Please fix the @param annotation.',
-                48,
+                'In function "test3", a "\DateTimeInterface" return type can be added.',
+                21,
+            ],
+            [
+                'In function "test4", parameter $type_hintable can be type-hinted to "array".',
+                30,
+            ],
+            [
+                'In function "test4", a "array" return type can be added.',
+                30,
+            ],
+            [
+                'In function "test6", parameter $better_type_hint type is "array". Please provide a @param annotation to further specify the type of the array. For instance: @param int[] $better_type_hint',
+                43,
+            ],
+            [
+                'In function "test6", return type is "array". Please provide a @param annotation to further specify the type of the array. For instance: @return int[]',
+                43,
+            ],
+            [
+                'In function "mismatch", parameter $param type is type-hinted to "string" but the @param annotation says it is a "int". Please fix the @param annotation.',
+                52,
+            ],
+            [
+                'In function "mismatch", return type is type-hinted to "string" but the @return annotation says it is a "int". Please fix the @return annotation.',
+                52,
             ],
 		]);
 	}

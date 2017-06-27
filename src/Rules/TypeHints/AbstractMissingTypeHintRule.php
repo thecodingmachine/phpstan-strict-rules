@@ -1,16 +1,13 @@
 <?php
-
+declare(strict_types=1);
 
 namespace TheCodingMachine\PHPStan\Rules\TypeHints;
 
 
 use BetterReflection\Reflection\ReflectionClass;
+use BetterReflection\Reflection\ReflectionFunction;
 use BetterReflection\Reflection\ReflectionMethod;
 use BetterReflection\Reflection\ReflectionParameter;
-use BetterReflection\SourceLocator\Type\AggregateSourceLocator;
-use BetterReflection\SourceLocator\Type\AutoloadSourceLocator;
-use BetterReflection\SourceLocator\Type\EvaledCodeSourceLocator;
-use BetterReflection\SourceLocator\Type\PhpInternalSourceLocator;
 use TheCodingMachine\PHPStan\BetterReflection\FindReflectionOnLine;
 use phpDocumentor\Reflection\Type;
 use phpDocumentor\Reflection\Types\Array_;
@@ -24,12 +21,11 @@ use phpDocumentor\Reflection\Types\Object_;
 use phpDocumentor\Reflection\Types\Scalar;
 use phpDocumentor\Reflection\Types\String_;
 use PhpParser\Node;
-use PhpParser\Node\Stmt\Catch_;
 use PHPStan\Analyser\Scope;
 use PHPStan\Broker\Broker;
 use PHPStan\Rules\Rule;
 
-class AbstractMissingTypeHintRule implements Rule
+abstract class AbstractMissingTypeHintRule implements Rule
 {
 
     /**
@@ -43,11 +39,13 @@ class AbstractMissingTypeHintRule implements Rule
         $this->broker = $broker;
     }
 
-    public function getNodeType(): string
-    {
-        // FIXME: does this encompass the Method_?
-        return Node\Stmt\Function_::class;
-    }
+    abstract public function getNodeType(): string;
+
+    /**
+     * @param ReflectionMethod|ReflectionFunction $reflection
+     * @return string
+     */
+    abstract public function getContext($reflection): string;
 
     /**
      * @param \PhpParser\Node\Stmt\Function_ $node
@@ -76,6 +74,11 @@ class AbstractMissingTypeHintRule implements Rule
             }
         }
 
+        $returnTypeError = $this->analyzeReturnType($reflection);
+        if ($returnTypeError !== null) {
+            $errors[] = $returnTypeError;
+        }
+
         return $errors;
     }
 
@@ -92,16 +95,40 @@ class AbstractMissingTypeHintRule implements Rule
 
         // If there is a type-hint, we have nothing to say unless it is an array.
         if ($phpTypeHint !== null) {
-            return $this->analyzeParameterWithTypehint($parameter, $phpTypeHint, $docBlockTypeHints);
+            return $this->analyzeWithTypehint($parameter, $phpTypeHint, $docBlockTypeHints);
         } else {
-            return $this->analyzeParameterWithoutTypehint($parameter, $docBlockTypeHints);
+            return $this->analyzeWithoutTypehint($parameter, $docBlockTypeHints);
         }
     }
 
     /**
-     * @param Type[] $docBlockTypeHints
+     * @param ReflectionFunction|ReflectionMethod $function
+     * @return null|string
      */
-    private function analyzeParameterWithTypehint(ReflectionParameter $parameter, Type $phpTypeHint, array $docBlockTypeHints): ?string
+    private function analyzeReturnType($function): ?string
+    {
+        $reflectionPhpTypeHint = $function->getReturnType();
+        $phpTypeHint = null;
+        if ($reflectionPhpTypeHint !== null) {
+            $phpTypeHint = $reflectionPhpTypeHint->getTypeObject();
+        }
+        $docBlockTypeHints = $function->getDocBlockReturnTypes();
+
+        // If there is a type-hint, we have nothing to say unless it is an array.
+        if ($phpTypeHint !== null) {
+            return $this->analyzeWithTypehint($function, $phpTypeHint, $docBlockTypeHints);
+        } else {
+            return $this->analyzeWithoutTypehint($function, $docBlockTypeHints);
+        }
+    }
+
+    /**
+     * @param ReflectionParameter|ReflectionMethod|ReflectionFunction $context
+     * @param Type $phpTypeHint
+     * @param Type[] $docBlockTypeHints
+     * @return null|string
+     */
+    private function analyzeWithTypehint($context, Type $phpTypeHint, array $docBlockTypeHints): ?string
     {
         $docblockWithoutNullable = $this->typesWithoutNullable($docBlockTypeHints);
 
@@ -109,7 +136,11 @@ class AbstractMissingTypeHintRule implements Rule
             // Let's detect mismatches between docblock and PHP typehint
             foreach ($docblockWithoutNullable as $docblockTypehint) {
                 if (get_class($docblockTypehint) !== get_class($phpTypeHint)) {
-                    return sprintf('Parameter $%s type is type-hinted to "%s" but the @param annotation says it is a "%s". Please fix the @param annotation.', $parameter->getName(), (string) $phpTypeHint, (string) $docblockTypehint);
+                    if ($context instanceof ReflectionParameter) {
+                        return sprintf('%s, parameter $%s type is type-hinted to "%s" but the @param annotation says it is a "%s". Please fix the @param annotation.', $this->getContext($context), $context->getName(), (string) $phpTypeHint, (string) $docblockTypehint);
+                    } else {
+                        return sprintf('%s, return type is type-hinted to "%s" but the @return annotation says it is a "%s". Please fix the @return annotation.', $this->getContext($context), (string) $phpTypeHint, (string) $docblockTypehint);
+                    }
                 }
             }
 
@@ -117,15 +148,27 @@ class AbstractMissingTypeHintRule implements Rule
         }
 
         if (empty($docblockWithoutNullable)) {
-            return sprintf('Parameter $%s type is "array". Please provide a @param annotation to further speciy the type of the array. For instance: @param int[] $%s', $parameter->getName(), $parameter->getName());
+            if ($context instanceof ReflectionParameter) {
+                return sprintf('%s, parameter $%s type is "array". Please provide a @param annotation to further specify the type of the array. For instance: @param int[] $%s', $this->getContext($context), $context->getName(), $context->getName());
+            } else {
+                return sprintf('%s, return type is "array". Please provide a @param annotation to further specify the type of the array. For instance: @return int[]', $this->getContext($context));
+            }
         } else {
             foreach ($docblockWithoutNullable as $docblockTypehint) {
                 if (!$docblockTypehint instanceof Array_) {
-                    return sprintf('Mismatching type-hints for parameter %s. PHP type hint is "array" and docblock type hint is %s.', $parameter->getName(), (string) $docblockTypehint);
+                    if ($context instanceof ReflectionParameter) {
+                        return sprintf('%s, mismatching type-hints for parameter %s. PHP type hint is "array" and docblock type hint is %s.', $this->getContext($context), $context->getName(), (string)$docblockTypehint);
+                    } else {
+                        return sprintf('%s, mismatching type-hints for return type. PHP type hint is "array" and docblock declared return type is %s.', $this->getContext($context), (string)$docblockTypehint);
+                    }
                 }
 
                 if ($docblockTypehint->getValueType() instanceof Mixed) {
-                    return sprintf('Parameter $%s type is "array". Please provide a more specific @param annotation. For instance: @param int[] $%s', $parameter->getName(), $parameter->getName());
+                    if ($context instanceof ReflectionParameter) {
+                        return sprintf('%s, parameter $%s type is "array". Please provide a more specific @param annotation. For instance: @param int[] $%s', $this->getContext($context), $context->getName(), $context->getName());
+                    } else {
+                        return sprintf('%s, return type is "array". Please provide a more specific @return annotation. For instance: @return int[]', $this->getContext($context));
+                    }
                 }
             }
         }
@@ -134,22 +177,29 @@ class AbstractMissingTypeHintRule implements Rule
     }
 
     /**
+     * @param ReflectionParameter|ReflectionMethod|ReflectionFunction $context
      * @param Type[] $docBlockTypeHints
      * @return null|string
      */
-    private function analyzeParameterWithoutTypehint(ReflectionParameter $parameter, array $docBlockTypeHints): ?string
+    private function analyzeWithoutTypehint($context, array $docBlockTypeHints): ?string
     {
         if (empty($docBlockTypeHints)) {
-            return sprintf('Parameter $%s has no type-hint and no @param annotation.', $parameter->getName());
+            if ($context instanceof ReflectionParameter) {
+                return sprintf('%s, parameter $%s has no type-hint and no @param annotation.', $this->getContext($context), $context->getName());
+            } else {
+                return sprintf('%s, there is no return type and no @return annotation.', $this->getContext($context));
+            }
         }
 
         $nativeTypehint = $this->isNativelyTypehintable($docBlockTypeHints);
 
         if ($nativeTypehint !== null) {
-            return sprintf('Parameter $%s can be type-hinted to "%s".', $parameter->getName(), $nativeTypehint);
+            if ($context instanceof ReflectionParameter) {
+                return sprintf('%s, parameter $%s can be type-hinted to "%s".', $this->getContext($context), $context->getName(), $nativeTypehint);
+            } else {
+                return sprintf('%s, a "%s" return type can be added.', $this->getContext($context), $nativeTypehint);
+            }
         }
-
-        // TODO: return types
 
         return null;
     }

@@ -2,7 +2,7 @@
 
 class Foo
 {
-    function test($no_type_hint)
+    function test($no_type_hint): void
     {
 
     }
@@ -11,8 +11,7 @@ class Foo
 class Bar implements \TheCodingMachine\PHPStan\Rules\TypeHints\data\StubInterface
 {
 
-    public function foo($no_type_hint)
+    public function foo($no_type_hint): void
     {
-        // TODO: Implement foo() method.
     }
 }

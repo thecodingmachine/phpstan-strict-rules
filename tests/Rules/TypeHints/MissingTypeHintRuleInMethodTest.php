@@ -18,7 +18,7 @@ class MissingTypeHintRuleInMethodTest extends \PHPStan\Rules\AbstractRuleTest
 
         $this->analyse([__DIR__ . '/data/typehints_in_methods.php'], [
 			[
-				'Parameter $no_type_hint has no type-hint and no @param annotation.',
+				'In method "Foo::test", parameter $no_type_hint has no type-hint and no @param annotation.',
 				5,
 			],
 		]);
