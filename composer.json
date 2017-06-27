@@ -10,6 +10,7 @@
         }
     ],
     "require": {
+        "php": ">=7.1",
         "phpstan/phpstan": "^0.7.0",
         "roave/better-reflection": "^1.2.0"
     },

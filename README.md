@@ -23,7 +23,7 @@ They are more "strict" than the default PHPStan rules and some may be controvers
 - You should not have empty catch statements
 - When throwing an exception inside a catch block, [you should pass the catched exception as the "previous" exception](http://bestpractices.thecodingmachine.com/php/error_handling.html#wrapping-an-exception-do-not-lose-the-previous-exception)
 
-### PHPDoc related rules
+### Type-hinting related rules
 
 This is a PHP 7.1+ rule:
 
@@ -31,6 +31,7 @@ This is a PHP 7.1+ rule:
 - If not possible, you should use a Docblock to specify the type
 - If type-hinting against an array, you should use a Docblock to further explain the content of the array
 
+[More about type-hinting related rules...](doc/typehinting_rules.md)
 
 ### Work-in-progress
 
