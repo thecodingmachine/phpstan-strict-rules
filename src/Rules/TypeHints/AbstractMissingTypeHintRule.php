@@ -35,7 +35,6 @@ abstract class AbstractMissingTypeHintRule implements Rule
 
     public function __construct(Broker $broker)
     {
-
         $this->broker = $broker;
     }
 

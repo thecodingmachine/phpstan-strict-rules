@@ -29,6 +29,9 @@
             "TheCodingMachine\\PHPStan\\": "tests/"
         }
     },
+    "scripts": {
+        "phpstan": "phpstan analyse src -c phpstan.neon --level=4 --no-progress -vvv"
+    },
     "extra": {
         "branch-alias": {
             "dev-master": "0.7-dev"
