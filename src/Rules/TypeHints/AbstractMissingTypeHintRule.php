@@ -4,11 +4,6 @@ declare(strict_types=1);
 namespace TheCodingMachine\PHPStan\Rules\TypeHints;
 
 
-use BetterReflection\Reflection\ReflectionClass;
-use BetterReflection\Reflection\ReflectionFunction;
-use BetterReflection\Reflection\ReflectionMethod;
-use BetterReflection\Reflection\ReflectionParameter;
-use TheCodingMachine\PHPStan\BetterReflection\FindReflectionOnLine;
 use phpDocumentor\Reflection\Type;
 use phpDocumentor\Reflection\Types\Array_;
 use phpDocumentor\Reflection\Types\Boolean;
@@ -24,6 +19,11 @@ use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Broker\Broker;
 use PHPStan\Rules\Rule;
+use Roave\BetterReflection\Reflection\ReflectionClass;
+use Roave\BetterReflection\Reflection\ReflectionFunction;
+use Roave\BetterReflection\Reflection\ReflectionMethod;
+use Roave\BetterReflection\Reflection\ReflectionParameter;
+use Roave\BetterReflection\Util\FindReflectionOnLine;
 
 abstract class AbstractMissingTypeHintRule implements Rule
 {

@@ -49,7 +49,7 @@ function test6(array $better_type_hint): array
  * @param int $param
  * @return int
  */
-function mismatch(string $param): string
+function mismatch(?string $param): string
 {
 
 }
