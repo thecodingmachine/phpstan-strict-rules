@@ -46,8 +46,10 @@ abstract class AbstractMissingTypeHintRule implements Rule
      */
     abstract public function getContext($reflection): string;
 
+    abstract public function isReturnIgnored(Node $node): bool;
+
     /**
-     * @param \PhpParser\Node\Stmt\Function_ $node
+     * @param \PhpParser\Node\Stmt\Function_|\PhpParser\Node\Stmt\ClassMethod $node
      * @param \PHPStan\Analyser\Scope $scope
      * @return string[]
      */
@@ -55,6 +57,11 @@ abstract class AbstractMissingTypeHintRule implements Rule
     {
         // TODO: improve performance by caching better reflection results.
         $finder = FindReflectionOnLine::buildDefaultFinder();
+
+        if ($node->getLine() < 0) {
+            // Fixes some problems with methods in anonymous class (the line number is poorly reported).
+            return [];
+        }
 
         $reflection = $finder($scope->getFile(), $node->getLine());
 
@@ -65,6 +72,10 @@ abstract class AbstractMissingTypeHintRule implements Rule
 
         $errors = [];
 
+        if ($reflection === null) {
+            throw new \RuntimeException('Could not find item at '.$scope->getFile().':'.$node->getLine());
+        }
+
         foreach ($reflection->getParameters() as $parameter) {
             $result = $this->analyzeParameter($parameter);
 
@@ -73,9 +84,11 @@ abstract class AbstractMissingTypeHintRule implements Rule
             }
         }
 
-        $returnTypeError = $this->analyzeReturnType($reflection);
-        if ($returnTypeError !== null) {
-            $errors[] = $returnTypeError;
+        if (!$this->isReturnIgnored($node)) {
+            $returnTypeError = $this->analyzeReturnType($reflection);
+            if ($returnTypeError !== null) {
+                $errors[] = $returnTypeError;
+            }
         }
 
         return $errors;
@@ -277,7 +290,7 @@ abstract class AbstractMissingTypeHintRule implements Rule
      * Removes "null" from the list of types.
      *
      * @param Type[] $docBlockTypeHints
-     * @return array
+     * @return Type[]
      */
     private function typesWithoutNullable(array $docBlockTypeHints): array
     {
