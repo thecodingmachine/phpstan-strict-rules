@@ -50,28 +50,9 @@ Let's add this package:
 composer require --dev thecodingmachine/phpstan-strict-rules
 ```
 
-Now, edit you `phpstan.neon` file and add these rules:
+Now, edit your `phpstan.neon` file and add these rules:
 
 ```yml
-services:
-  -
-    class: TheCodingMachine\PHPStan\Rules\Exceptions\ThrowMustBundlePreviousExceptionRule
-    tags:
-      - phpstan.rules.rule
-  -
-    class: TheCodingMachine\PHPStan\Rules\Exceptions\DoNotThrowExceptionBaseClassRule
-    tags:
-      - phpstan.rules.rule
-  -
-    class: TheCodingMachine\PHPStan\Rules\Exceptions\EmptyExceptionRule
-    tags:
-      - phpstan.rules.rule
-  -
-    class: TheCodingMachine\PHPStan\Rules\TypeHints\MissingTypeHintInFunctionRule
-    tags:
-      - phpstan.rules.rule
-  -
-    class: TheCodingMachine\PHPStan\Rules\TypeHints\MissingTypeHintInMethodRule
-    tags:
-      - phpstan.rules.rule
+includes:
+    - vendor/thecodingmachine/phpstan-strict-rules/phpstan-strict-rules.neon
 ```
