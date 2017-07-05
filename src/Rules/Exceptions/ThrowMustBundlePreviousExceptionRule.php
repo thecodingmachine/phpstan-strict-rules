@@ -53,7 +53,7 @@ class ThrowMustBundlePreviousExceptionRule implements Rule
 
                 // If the variable is used in the context of a method call (like $e->getMessage()), the exception is not passed as a "previous exception".
                 if ($node instanceof Node\Expr\MethodCall) {
-                    if ($node->var->name === $this->catchedVariableName) {
+                    if ($node->var instanceof Node\Expr\Variable && $node->var->name === $this->catchedVariableName) {
                         $this->exceptionUsedCount--;
                     }
                 }

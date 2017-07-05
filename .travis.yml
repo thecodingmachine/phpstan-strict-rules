@@ -24,5 +24,6 @@ install:
 - mkdir tmp
 script:
 - vendor/bin/phpunit --verbose;
+- composer phpstan
 after_success:
 - vendor/bin/coveralls -v

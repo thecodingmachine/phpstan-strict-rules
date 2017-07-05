@@ -27,4 +27,9 @@ class MissingTypeHintInFunctionRule extends AbstractMissingTypeHintRule
         }
         return 'In function "'.$reflection->getName().'"';
     }
+
+    public function isReturnIgnored(Node $node): bool
+    {
+        return false;
+    }
 }
