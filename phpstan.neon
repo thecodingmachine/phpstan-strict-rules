@@ -1,5 +1,6 @@
-#parameters:
-#    ignoreErrors:
+parameters:
+    ignoreErrors:
+     - '#Call to an undefined method Roave\\BetterReflection\\Reflection\\ReflectionFunctionAbstract::getDeclaringClass().#'
 
 includes:
     - phpstan-strict-rules.neon

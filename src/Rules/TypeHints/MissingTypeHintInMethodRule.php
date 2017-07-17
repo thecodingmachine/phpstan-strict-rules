@@ -3,10 +3,10 @@
 
 namespace TheCodingMachine\PHPStan\Rules\TypeHints;
 
-use BetterReflection\Reflection\ReflectionFunction;
-use BetterReflection\Reflection\ReflectionFunctionAbstract;
-use BetterReflection\Reflection\ReflectionMethod;
-use BetterReflection\Reflection\ReflectionParameter;
+use Roave\BetterReflection\Reflection\ReflectionFunction;
+use Roave\BetterReflection\Reflection\ReflectionFunctionAbstract;
+use Roave\BetterReflection\Reflection\ReflectionMethod;
+use Roave\BetterReflection\Reflection\ReflectionParameter;
 use PhpParser\Node;
 use PHPStan\Reflection\MethodReflection;
 
