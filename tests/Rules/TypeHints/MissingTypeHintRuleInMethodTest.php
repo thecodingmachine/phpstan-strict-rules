@@ -21,6 +21,11 @@ class MissingTypeHintRuleInMethodTest extends \PHPStan\Rules\AbstractRuleTest
 				'In method "Foo::test", parameter $no_type_hint has no type-hint and no @param annotation.',
 				5,
 			],
-		]);
+            [
+                'In method "Baz::notInherited", parameter $no_type_hint has no type-hint and no @param annotation.',
+                36,
+            ],
+
+        ]);
 	}
 }

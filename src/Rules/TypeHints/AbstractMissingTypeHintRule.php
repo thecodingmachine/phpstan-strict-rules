@@ -313,6 +313,9 @@ abstract class AbstractMissingTypeHintRule implements Rule
 
         $parentClass = $class->getParentClass();
         if ($parentClass !== null) {
+            if ($parentClass->hasMethod($method->getName())) {
+                return true;
+            }
             return $this->isInherited($method, $parentClass);
         }
 

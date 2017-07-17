@@ -19,3 +19,22 @@ class Bar implements \TheCodingMachine\PHPStan\Rules\TypeHints\data\StubInterfac
     {
     }
 }
+
+class BazClass extends \TheCodingMachine\PHPStan\Rules\TypeHints\data\StubClass
+{
+    // Extended function
+    public function baz($no_type_hint)
+    {
+
+    }
+
+    public function bazbaz($no_type_hint)
+    {
+
+    }
+
+    public function notInherited($no_type_hint): void
+    {
+
+    }
+}
