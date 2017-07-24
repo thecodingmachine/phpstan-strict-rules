@@ -10,7 +10,7 @@ use phpDocumentor\Reflection\Types\Boolean;
 use phpDocumentor\Reflection\Types\Callable_;
 use phpDocumentor\Reflection\Types\Float_;
 use phpDocumentor\Reflection\Types\Integer;
-use phpDocumentor\Reflection\Types\Mixed;
+use phpDocumentor\Reflection\Types\Mixed_;
 use phpDocumentor\Reflection\Types\Null_;
 use phpDocumentor\Reflection\Types\Object_;
 use phpDocumentor\Reflection\Types\Scalar;
@@ -175,7 +175,7 @@ abstract class AbstractMissingTypeHintRule implements Rule
                     }
                 }
 
-                if ($docblockTypehint->getValueType() instanceof Mixed) {
+                if ($docblockTypehint->getValueType() instanceof Mixed_) {
                     if ($context instanceof ReflectionParameter) {
                         return sprintf('%s, parameter $%s type is "array". Please provide a more specific @param annotation. For instance: @param int[] $%s', $this->getContext($context), $context->getName(), $context->getName());
                     } else {
