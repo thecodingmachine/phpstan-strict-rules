@@ -38,7 +38,6 @@ This is a PHP 7.1+ rule:
     // Don't use superglobals (__GET __POST)...
     // Always provide a "default" in a switch statement (and throw an exception if unexpected)
     // Never use public properties
-    // Force type hinting on all methods, starting with PHP 7.1 (or mixed must be passed in @param docblock to explain that we expect absolutely anything)
 
 ## Installation
 
