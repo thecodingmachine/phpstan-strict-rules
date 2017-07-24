@@ -11,7 +11,7 @@
     ],
     "require": {
         "php": ">=7.1",
-        "phpstan/phpstan": "^0.7.0",
+        "phpstan/phpstan": "^0.8.0",
         "roave/better-reflection": "dev-master as 2.0.0"
     },
     "require-dev": {
@@ -34,7 +34,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "0.7-dev"
+            "dev-master": "0.8-dev"
         }
     }
 }
