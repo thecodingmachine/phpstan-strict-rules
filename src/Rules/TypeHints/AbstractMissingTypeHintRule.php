@@ -102,12 +102,16 @@ abstract class AbstractMissingTypeHintRule implements Rule
      */
     private function analyzeParameter(ReflectionParameter $parameter): ?string
     {
-        $phpTypeHint = $parameter->getTypeHint();
+        $typeResolver = new \phpDocumentor\Reflection\TypeResolver();
+
+        $phpTypeHint = $parameter->getType();
         $docBlockTypeHints = $parameter->getDocBlockTypes();
 
         // If there is a type-hint, we have nothing to say unless it is an array.
         if ($phpTypeHint !== null) {
-            return $this->analyzeWithTypehint($parameter, $phpTypeHint, $docBlockTypeHints);
+            $phpdocTypeHint = $typeResolver->resolve((string) $phpTypeHint);
+
+            return $this->analyzeWithTypehint($parameter, $phpdocTypeHint, $docBlockTypeHints);
         } else {
             return $this->analyzeWithoutTypehint($parameter, $docBlockTypeHints);
         }
@@ -122,7 +126,8 @@ abstract class AbstractMissingTypeHintRule implements Rule
         $reflectionPhpTypeHint = $function->getReturnType();
         $phpTypeHint = null;
         if ($reflectionPhpTypeHint !== null) {
-            $phpTypeHint = $reflectionPhpTypeHint->getTypeObject();
+            $typeResolver = new \phpDocumentor\Reflection\TypeResolver();
+            $phpTypeHint = $typeResolver->resolve((string) $reflectionPhpTypeHint);
         }
         $docBlockTypeHints = $function->getDocBlockReturnTypes();
 
