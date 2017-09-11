@@ -19,11 +19,11 @@ use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Broker\Broker;
 use PHPStan\Rules\Rule;
+use Roave\BetterReflection\BetterReflection;
 use Roave\BetterReflection\Reflection\ReflectionClass;
 use Roave\BetterReflection\Reflection\ReflectionFunction;
 use Roave\BetterReflection\Reflection\ReflectionMethod;
 use Roave\BetterReflection\Reflection\ReflectionParameter;
-use Roave\BetterReflection\Util\FindReflectionOnLine;
 
 abstract class AbstractMissingTypeHintRule implements Rule
 {
@@ -56,7 +56,7 @@ abstract class AbstractMissingTypeHintRule implements Rule
     public function processNode(Node $node, Scope $scope): array
     {
         // TODO: improve performance by caching better reflection results.
-        $finder = FindReflectionOnLine::buildDefaultFinder();
+        $finder = (new BetterReflection())->findReflectionsOnLine();
 
         if ($node->getLine() < 0) {
             // Fixes some problems with methods in anonymous class (the line number is poorly reported).
