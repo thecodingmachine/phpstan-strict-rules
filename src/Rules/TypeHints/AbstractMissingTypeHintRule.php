@@ -299,9 +299,9 @@ abstract class AbstractMissingTypeHintRule implements Rule
      */
     private function typesWithoutNullable(array $docBlockTypeHints): array
     {
-        return array_filter($docBlockTypeHints, function($item) {
+        return array_values(array_filter($docBlockTypeHints, function($item) {
             return !$item instanceof Null_;
-        });
+        }));
     }
 
     private function isInherited(ReflectionMethod $method, ReflectionClass $class = null): bool
