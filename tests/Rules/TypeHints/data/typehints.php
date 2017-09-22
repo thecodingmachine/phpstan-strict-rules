@@ -53,3 +53,21 @@ function mismatch(?string $param): string
 {
 
 }
+
+/**
+ * @param mixed[] $any_array
+ * @return mixed[]
+ */
+function test7(array $any_array): array
+{
+
+}
+
+/**
+ * @param array $any_array
+ * @return array
+ */
+function test8(array $any_array): array
+{
+
+}
