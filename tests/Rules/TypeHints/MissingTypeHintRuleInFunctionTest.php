@@ -65,6 +65,14 @@ class MissingTypeHintRuleInFunctionTest extends \PHPStan\Rules\AbstractRuleTest
                 'In function "mismatch", return type is type-hinted to "string" but the @return annotation says it is a "int". Please fix the @return annotation.',
                 52,
             ],
+            [
+                'In function "test8", parameter $any_array type is "array". Please provide a more specific @param annotation in the docblock. For instance: @param int[] $any_array. Use @param mixed[] $any_array if this is really an array of mixed values.',
+                70,
+            ],
+            [
+                'In function "test8", return type is "array". Please provide a more specific @return annotation. For instance: @return int[]. Use @return mixed[] if this is really an array of mixed values.',
+                70,
+            ],
 		]);
 	}
 }

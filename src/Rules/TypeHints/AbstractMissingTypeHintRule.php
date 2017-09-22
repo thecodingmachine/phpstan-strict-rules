@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace TheCodingMachine\PHPStan\Rules\TypeHints;
 
 
+use phpDocumentor\Reflection\DocBlockFactory;
 use phpDocumentor\Reflection\Type;
 use phpDocumentor\Reflection\Types\Array_;
 use phpDocumentor\Reflection\Types\Boolean;
@@ -24,6 +25,8 @@ use Roave\BetterReflection\Reflection\ReflectionClass;
 use Roave\BetterReflection\Reflection\ReflectionFunction;
 use Roave\BetterReflection\Reflection\ReflectionMethod;
 use Roave\BetterReflection\Reflection\ReflectionParameter;
+use Roave\BetterReflection\TypesFinder\PhpDocumentor\NamespaceNodeToReflectionTypeContext;
+use Roave\BetterReflection\TypesFinder\ResolveTypes;
 
 abstract class AbstractMissingTypeHintRule implements Rule
 {
@@ -181,16 +184,35 @@ abstract class AbstractMissingTypeHintRule implements Rule
                 }
 
                 if ($docblockTypehint->getValueType() instanceof Mixed_) {
-                    if ($context instanceof ReflectionParameter) {
-                        return sprintf('%s, parameter $%s type is "array". Please provide a more specific @param annotation. For instance: @param int[] $%s', $this->getContext($context), $context->getName(), $context->getName());
-                    } else {
-                        return sprintf('%s, return type is "array". Please provide a more specific @return annotation. For instance: @return int[]', $this->getContext($context));
+                    if (!$this->findExplicitMixedArray($context)) {
+                        if ($context instanceof ReflectionParameter) {
+                            return sprintf('%s, parameter $%s type is "array". Please provide a more specific @param annotation in the docblock. For instance: @param int[] $%s. Use @param mixed[] $%s if this is really an array of mixed values.', $this->getContext($context), $context->getName(), $context->getName(), $context->getName());
+                        } else {
+                            return sprintf('%s, return type is "array". Please provide a more specific @return annotation. For instance: @return int[]. Use @return mixed[] if this is really an array of mixed values.', $this->getContext($context));
+                        }
                     }
                 }
             }
         }
 
         return null;
+    }
+
+    /**
+     * @param ReflectionParameter|ReflectionMethod|ReflectionFunction $context
+     * @return bool
+     */
+    private function findExplicitMixedArray($context) : bool
+    {
+        if ($context instanceof ReflectionParameter) {
+            $context = $context->getDeclaringFunction();
+        }
+
+        $docComment = $context->getDocComment();
+
+        // Very approximate solution: let's find in the whole docblock whether there is a mixed[] value or not.
+        // TODO: improve this to target precisely the parameter or return type.
+        return strpos($docComment, 'mixed[]') !== false;
     }
 
     /**
