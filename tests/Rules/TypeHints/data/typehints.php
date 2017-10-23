@@ -71,3 +71,11 @@ function test8(array $any_array): array
 {
 
 }
+
+/**
+ * @param DateTimeInterface[] $dates
+ */
+function test9(DateTimeInterface ...$dates): void
+{
+
+}

@@ -113,6 +113,9 @@ abstract class AbstractMissingTypeHintRule implements Rule
         // If there is a type-hint, we have nothing to say unless it is an array.
         if ($phpTypeHint !== null) {
             $phpdocTypeHint = $typeResolver->resolve((string) $phpTypeHint);
+            if ($parameter->isVariadic()) {
+                $phpdocTypeHint = new Array_($phpdocTypeHint);
+            }
 
             return $this->analyzeWithTypehint($parameter, $phpdocTypeHint, $docBlockTypeHints);
         } else {
