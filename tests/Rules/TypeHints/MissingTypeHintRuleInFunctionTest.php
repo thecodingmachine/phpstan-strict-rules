@@ -73,6 +73,10 @@ class MissingTypeHintRuleInFunctionTest extends \PHPStan\Rules\AbstractRuleTest
                 'In function "test8", return type is "array". Please provide a more specific @return annotation. For instance: @return int[]. Use @return mixed[] if this is really an array of mixed values.',
                 70,
             ],
+            [
+                'In function "test10", for parameter $id, invalid docblock @param encountered. Attempted to resolve "" but it appears to be empty',
+                86,
+            ]
 		]);
 	}
 }

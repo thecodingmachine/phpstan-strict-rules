@@ -79,3 +79,11 @@ function test9(DateTimeInterface ...$dates): void
 {
 
 }
+
+/**
+ * @param $id
+ */
+function test10($id): void
+{
+
+}
