@@ -8,6 +8,7 @@ require_once __DIR__ . '/PHPStan/Rules/AbstractRuleTest.php';
 require_once __DIR__ . '/PHPStan/Rules/AlwaysFailRule.php';
 require_once __DIR__ . '/PHPStan/Rules/DummyRule.php';*/
 
+/*
 $rootDir = __DIR__ . '/..';
 $tmpDir = $rootDir . '/tmp';
 $confDir = $rootDir . '/vendor/phpstan/phpstan/conf';
@@ -26,6 +27,7 @@ $configurator->addParameters([
 ]);
 $container = $configurator->createContainer();
 
-PHPStan\TestCase::setContainer($container);
+PHPStan\Testing\TestCase::setContainer($container);
 PHPStan\Type\TypeCombinator::setUnionTypesEnabled(true);
 require_once __DIR__ . '/phpstan-bootstrap.php';
+*/

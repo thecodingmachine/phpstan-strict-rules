@@ -2,7 +2,9 @@
 
 namespace TheCodingMachine\PHPStan\Rules\TypeHints;
 
-class MissingTypeHintRuleInFunctionTest extends \PHPStan\Rules\AbstractRuleTest
+use PHPStan\Testing\RuleTestCase;
+
+class MissingTypeHintRuleInFunctionTest extends RuleTestCase
 {
 
 	protected function getRule(): \PHPStan\Rules\Rule

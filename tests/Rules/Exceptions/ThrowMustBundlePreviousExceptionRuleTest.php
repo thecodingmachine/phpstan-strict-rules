@@ -2,9 +2,10 @@
 
 namespace PHPStan\Rules\Exceptions;
 
+use PHPStan\Testing\RuleTestCase;
 use TheCodingMachine\PHPStan\Rules\Exceptions\ThrowMustBundlePreviousExceptionRule;
 
-class ThrowMustBundlePreviousExceptionRuleTest extends \PHPStan\Rules\AbstractRuleTest
+class ThrowMustBundlePreviousExceptionRuleTest extends RuleTestCase
 {
 
 	protected function getRule(): \PHPStan\Rules\Rule

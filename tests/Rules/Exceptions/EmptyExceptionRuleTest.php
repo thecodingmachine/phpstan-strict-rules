@@ -2,9 +2,10 @@
 
 namespace PHPStan\Rules\Exceptions;
 
+use PHPStan\Testing\RuleTestCase;
 use TheCodingMachine\PHPStan\Rules\Exceptions\EmptyExceptionRule;
 
-class EmptyExceptionRuleTest extends \PHPStan\Rules\AbstractRuleTest
+class EmptyExceptionRuleTest extends RuleTestCase
 {
 
 	protected function getRule(): \PHPStan\Rules\Rule

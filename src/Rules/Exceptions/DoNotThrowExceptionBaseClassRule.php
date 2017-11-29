@@ -31,7 +31,7 @@ class DoNotThrowExceptionBaseClassRule implements Rule
 
         $type = $scope->getType($node->expr);
 
-        $class = $type->getClass();
+        $class = $type->getClassName();
 
         if ($class === 'Exception') {
             return [

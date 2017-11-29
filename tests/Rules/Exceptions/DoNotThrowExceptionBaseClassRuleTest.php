@@ -2,10 +2,11 @@
 
 namespace PHPStan\Rules\Exceptions;
 
+use PHPStan\Testing\RuleTestCase;
 use TheCodingMachine\PHPStan\Rules\Exceptions\DoNotThrowExceptionBaseClassRule;
 use TheCodingMachine\PHPStan\Rules\Exceptions\EmptyExceptionRule;
 
-class DoNotThrowExceptionBaseClassRuleTest extends \PHPStan\Rules\AbstractRuleTest
+class DoNotThrowExceptionBaseClassRuleTest extends RuleTestCase
 {
 
 	protected function getRule(): \PHPStan\Rules\Rule
