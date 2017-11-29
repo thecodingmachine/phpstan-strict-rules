@@ -3,11 +3,8 @@
 
 namespace TheCodingMachine\PHPStan\Rules\Exceptions;
 
-
 use PhpParser\Node;
-use PhpParser\Node\Stmt\Catch_;
 use PHPStan\Analyser\Scope;
-use PHPStan\Broker\Broker;
 use PHPStan\Rules\Rule;
 use PHPStan\Type\ObjectType;
 
@@ -29,7 +26,6 @@ class DoNotThrowExceptionBaseClassRule implements Rule
      */
     public function processNode(Node $node, Scope $scope): array
     {
-
         $type = $scope->getType($node->expr);
 
         if ($type instanceof ObjectType) {

@@ -1,4 +1,4 @@
-<?php declare(strict_types = 1);
+<?php declare(strict_types=1);
 
 use Nette\Configurator;
 
@@ -20,10 +20,10 @@ $configurator->setTempDirectory($tmpDir);
 $configurator->addConfig($confDir . '/config.neon');
 $configurator->addConfig($confDir . '/config.level5.neon');
 $configurator->addParameters([
-	'rootDir' => $rootDir,
-	'tmpDir' => $tmpDir,
-	'currentWorkingDirectory' => $rootDir,
-	'cliArgumentsVariablesRegistered' => false,
+    'rootDir' => $rootDir,
+    'tmpDir' => $tmpDir,
+    'currentWorkingDirectory' => $rootDir,
+    'cliArgumentsVariablesRegistered' => false,
 ]);
 $container = $configurator->createContainer();
 

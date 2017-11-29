@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace TheCodingMachine\PHPStan\Rules\TypeHints;
 
-
 use phpDocumentor\Reflection\DocBlockFactory;
 use phpDocumentor\Reflection\Type;
 use phpDocumentor\Reflection\Types\Array_;
@@ -111,7 +110,6 @@ abstract class AbstractMissingTypeHintRule implements Rule
         try {
             $docBlockTypeHints = $parameter->getDocBlockTypes();
         } catch (\InvalidArgumentException $e) {
-
             return sprintf('%s, for parameter $%s, invalid docblock @param encountered. %s',
                 $this->getContext($parameter),
                 $parameter->getName(),
@@ -333,7 +331,7 @@ abstract class AbstractMissingTypeHintRule implements Rule
      */
     private function typesWithoutNullable(array $docBlockTypeHints): array
     {
-        return array_values(array_filter($docBlockTypeHints, function($item) {
+        return array_values(array_filter($docBlockTypeHints, function ($item) {
             return !$item instanceof Null_;
         }));
     }
