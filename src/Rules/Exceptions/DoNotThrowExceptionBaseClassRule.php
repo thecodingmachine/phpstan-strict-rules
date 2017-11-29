@@ -9,6 +9,7 @@ use PhpParser\Node\Stmt\Catch_;
 use PHPStan\Analyser\Scope;
 use PHPStan\Broker\Broker;
 use PHPStan\Rules\Rule;
+use PHPStan\Type\ObjectType;
 
 /**
  * This rule checks that the base \Exception class is never thrown. Instead, developers should subclass the \Exception
@@ -31,12 +32,14 @@ class DoNotThrowExceptionBaseClassRule implements Rule
 
         $type = $scope->getType($node->expr);
 
-        $class = $type->getClassName();
+        if ($type instanceof ObjectType) {
+            $class = $type->getClassName();
 
-        if ($class === 'Exception') {
-            return [
-                'Do not throw the \Exception base class. Instead, extend the \Exception base class'
-            ];
+            if ($class === 'Exception') {
+                return [
+                    'Do not throw the \Exception base class. Instead, extend the \Exception base class'
+                ];
+            }
         }
 
         return [];
