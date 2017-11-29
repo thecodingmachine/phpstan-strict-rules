@@ -4,7 +4,6 @@ namespace TestCatch;
 
 class MyCatchException extends \Exception
 {
-
 }
 
 function foo()

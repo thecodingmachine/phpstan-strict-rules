@@ -2,9 +2,8 @@
 
 class Foo
 {
-    function test($no_type_hint): void
+    public function test($no_type_hint): void
     {
-
     }
 }
 
@@ -25,16 +24,13 @@ class BazClass extends \TheCodingMachine\PHPStan\Rules\TypeHints\data\StubClass
     // Extended function
     public function baz($no_type_hint)
     {
-
     }
 
     public function bazbaz($no_type_hint)
     {
-
     }
 
     public function notInherited($no_type_hint): void
     {
-
     }
 }

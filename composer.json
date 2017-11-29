@@ -11,7 +11,7 @@
     ],
     "require": {
         "php": ">=7.1",
-        "phpstan/phpstan": "^0.8.0",
+        "phpstan/phpstan": "^0.9",
         "roave/better-reflection": "^2.0"
     },
     "require-dev": {
@@ -24,17 +24,17 @@
         }
     },
     "autoload-dev": {
-        "classmap": ["vendor/phpstan/phpstan/tests/PHPStan", "vendor/phpstan/phpstan/tests/TestCase.php"],
+        "classmap": ["vendor/phpstan/phpstan/tests/PHPStan"],
         "psr-4": {
             "TheCodingMachine\\PHPStan\\": "tests/"
         }
     },
     "scripts": {
-        "phpstan": "phpstan analyse src -c phpstan.neon --level=4 --no-progress -vvv"
+        "phpstan": "phpstan analyse src -c phpstan.neon --level=5 --no-progress -vvv"
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "0.8-dev"
+            "dev-master": "0.9-dev"
         }
     }
 }

@@ -2,7 +2,6 @@
 
 function test($no_type_hint)
 {
-
 }
 
 /**
@@ -11,7 +10,6 @@ function test($no_type_hint)
  */
 function test2($type_hintable)
 {
-
 }
 
 /**
@@ -20,7 +18,6 @@ function test2($type_hintable)
  */
 function test3($type_hintable)
 {
-
 }
 
 /**
@@ -29,7 +26,6 @@ function test3($type_hintable)
  */
 function test4($type_hintable)
 {
-
 }
 
 /**
@@ -37,12 +33,10 @@ function test4($type_hintable)
  */
 function test5(array $type_hintable): void
 {
-
 }
 
 function test6(array $better_type_hint): array
 {
-
 }
 
 /**
@@ -51,7 +45,6 @@ function test6(array $better_type_hint): array
  */
 function mismatch(?string $param): string
 {
-
 }
 
 /**
@@ -60,7 +53,6 @@ function mismatch(?string $param): string
  */
 function test7(array $any_array): array
 {
-
 }
 
 /**
@@ -69,7 +61,6 @@ function test7(array $any_array): array
  */
 function test8(array $any_array): array
 {
-
 }
 
 /**
@@ -77,7 +68,6 @@ function test8(array $any_array): array
  */
 function test9(DateTimeInterface ...$dates): void
 {
-
 }
 
 /**
@@ -85,5 +75,4 @@ function test9(DateTimeInterface ...$dates): void
  */
 function test10($id): void
 {
-
 }

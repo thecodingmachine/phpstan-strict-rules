@@ -3,7 +3,6 @@
 
 namespace TheCodingMachine\PHPStan\Rules\Exceptions;
 
-
 use PhpParser\Node;
 use PhpParser\Node\Stmt\Catch_;
 use PhpParser\NodeTraverser;
@@ -40,11 +39,11 @@ class ThrowMustBundlePreviousExceptionRule implements Rule
 
             public function __construct(string $catchedVariableName)
             {
-
                 $this->catchedVariableName = $catchedVariableName;
             }
 
-            public function leaveNode(Node $node) {
+            public function leaveNode(Node $node)
+            {
                 if ($node instanceof Node\Expr\Variable) {
                     if ($node->name === $this->catchedVariableName) {
                         $this->exceptionUsedCount++;
@@ -70,7 +69,6 @@ class ThrowMustBundlePreviousExceptionRule implements Rule
             {
                 return $this->unusedThrows;
             }
-
         };
 
         $traverser = new NodeTraverser();

@@ -3,7 +3,6 @@
 
 namespace TheCodingMachine\PHPStan\Rules\Exceptions;
 
-
 use PhpParser\Node;
 use PhpParser\Node\Stmt\Catch_;
 use PHPStan\Analyser\Scope;
@@ -34,7 +33,7 @@ class EmptyExceptionRule implements Rule
     }
 
     /**
-     * @param Node\Stmt[] $stmts
+     * @param Node[] $stmts
      * @return bool
      */
     private function isEmpty(array $stmts): bool
