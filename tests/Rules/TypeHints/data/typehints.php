@@ -76,3 +76,17 @@ function test9(DateTimeInterface ...$dates): void
 function test10($id): void
 {
 }
+
+/**
+ * @param DateTimeInterface[] $type_hintable
+ */
+function test11(iterable $type_hintable): void
+{
+}
+
+/**
+ * @param TheCodingMachine\PHPStan\Rules\TypeHints\data\StubIterator|DateTimeInterface[] $type_hintable
+ */
+function test12(TheCodingMachine\PHPStan\Rules\TypeHints\data\StubIterator $type_hintable): void
+{
+}

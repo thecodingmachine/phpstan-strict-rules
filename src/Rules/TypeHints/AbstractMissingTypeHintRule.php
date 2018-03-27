@@ -10,6 +10,7 @@ use phpDocumentor\Reflection\Types\Boolean;
 use phpDocumentor\Reflection\Types\Callable_;
 use phpDocumentor\Reflection\Types\Float_;
 use phpDocumentor\Reflection\Types\Integer;
+use phpDocumentor\Reflection\Types\Iterable_;
 use phpDocumentor\Reflection\Types\Mixed_;
 use phpDocumentor\Reflection\Types\Null_;
 use phpDocumentor\Reflection\Types\Object_;
@@ -24,6 +25,7 @@ use Roave\BetterReflection\Reflection\ReflectionClass;
 use Roave\BetterReflection\Reflection\ReflectionFunction;
 use Roave\BetterReflection\Reflection\ReflectionMethod;
 use Roave\BetterReflection\Reflection\ReflectionParameter;
+use Roave\BetterReflection\Reflector\Exception\IdentifierNotFound;
 use Roave\BetterReflection\TypesFinder\PhpDocumentor\NamespaceNodeToReflectionTypeContext;
 use Roave\BetterReflection\TypesFinder\ResolveTypes;
 
@@ -162,7 +164,7 @@ abstract class AbstractMissingTypeHintRule implements Rule
     {
         $docblockWithoutNullable = $this->typesWithoutNullable($docBlockTypeHints);
 
-        if (!$phpTypeHint instanceof Array_) {
+        if (!$this->isTypeIterable($phpTypeHint)) {
             // Let's detect mismatches between docblock and PHP typehint
             foreach ($docblockWithoutNullable as $docblockTypehint) {
                 if (get_class($docblockTypehint) !== get_class($phpTypeHint)) {
@@ -185,7 +187,7 @@ abstract class AbstractMissingTypeHintRule implements Rule
             }
         } else {
             foreach ($docblockWithoutNullable as $docblockTypehint) {
-                if (!$docblockTypehint instanceof Array_) {
+                if (!$this->isTypeIterable($docblockTypehint)) {
                     if ($context instanceof ReflectionParameter) {
                         return sprintf('%s, mismatching type-hints for parameter %s. PHP type hint is "array" and docblock type hint is %s.', $this->getContext($context), $context->getName(), (string)$docblockTypehint);
                     } else {
@@ -193,7 +195,7 @@ abstract class AbstractMissingTypeHintRule implements Rule
                     }
                 }
 
-                if ($docblockTypehint->getValueType() instanceof Mixed_) {
+                if ($docblockTypehint instanceof Array_ && $docblockTypehint->getValueType() instanceof Mixed_) {
                     if (!$this->findExplicitMixedArray($context)) {
                         if ($context instanceof ReflectionParameter) {
                             return sprintf('%s, parameter $%s type is "array". Please provide a more specific @param annotation in the docblock. For instance: @param int[] $%s. Use @param mixed[] $%s if this is really an array of mixed values.', $this->getContext($context), $context->getName(), $context->getName(), $context->getName());
@@ -206,6 +208,27 @@ abstract class AbstractMissingTypeHintRule implements Rule
         }
 
         return null;
+    }
+
+    private function isTypeIterable(Type $phpTypeHint) : bool
+    {
+        if ($phpTypeHint instanceof Array_ || $phpTypeHint instanceof Iterable_) {
+            return true;
+        }
+        if ($phpTypeHint instanceof Object_) {
+            // TODO: cache BetterReflection for better performance!
+            try {
+                $class = (new BetterReflection())->classReflector()->reflect((string) $phpTypeHint);
+            } catch (IdentifierNotFound $e) {
+                // Class not found? Let's not throw an error. It will be caught by other rules anyway.
+                return false;
+            }
+            if ($class->implementsInterface('Traversable')) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
