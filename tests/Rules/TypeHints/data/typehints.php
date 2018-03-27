@@ -90,3 +90,10 @@ function test11(iterable $type_hintable): void
 function test12(TheCodingMachine\PHPStan\Rules\TypeHints\data\StubIterator $type_hintable): void
 {
 }
+
+/**
+ * @param DateTimeImmutable[] $type_hintable
+ */
+function test13(ClassDoesNotExist $type_hintable): void
+{
+}
