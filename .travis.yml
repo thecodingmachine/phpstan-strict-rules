@@ -2,6 +2,7 @@ language: php
 sudo: false
 php:
   - 7.1
+  - 7.2
 env:
   global:
   # We need to prefer source to get PHPStan test directory. Otherwise, it is removed from ZIP
