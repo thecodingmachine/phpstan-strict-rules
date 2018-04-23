@@ -179,28 +179,30 @@ abstract class AbstractMissingTypeHintRule implements Rule
             return null;
         }
 
-        if (empty($docblockWithoutNullable)) {
-            if ($context instanceof ReflectionParameter) {
-                return sprintf('%s, parameter $%s type is "array". Please provide a @param annotation to further specify the type of the array. For instance: @param int[] $%s', $this->getContext($context), $context->getName(), $context->getName());
-            } else {
-                return sprintf('%s, return type is "array". Please provide a @param annotation to further specify the type of the array. For instance: @return int[]', $this->getContext($context));
-            }
-        } else {
-            foreach ($docblockWithoutNullable as $docblockTypehint) {
-                if (!$this->isTypeIterable($docblockTypehint)) {
-                    if ($context instanceof ReflectionParameter) {
-                        return sprintf('%s, mismatching type-hints for parameter %s. PHP type hint is "array" and docblock type hint is %s.', $this->getContext($context), $context->getName(), (string)$docblockTypehint);
-                    } else {
-                        return sprintf('%s, mismatching type-hints for return type. PHP type hint is "array" and docblock declared return type is %s.', $this->getContext($context), (string)$docblockTypehint);
-                    }
+        if ($phpTypeHint instanceof Array_) {
+            if (empty($docblockWithoutNullable)) {
+                if ($context instanceof ReflectionParameter) {
+                    return sprintf('%s, parameter $%s type is "array". Please provide a @param annotation to further specify the type of the array. For instance: @param int[] $%s', $this->getContext($context), $context->getName(), $context->getName());
+                } else {
+                    return sprintf('%s, return type is "array". Please provide a @param annotation to further specify the type of the array. For instance: @return int[]', $this->getContext($context));
                 }
-
-                if ($docblockTypehint instanceof Array_ && $docblockTypehint->getValueType() instanceof Mixed_) {
-                    if (!$this->findExplicitMixedArray($context)) {
+            } else {
+                foreach ($docblockWithoutNullable as $docblockTypehint) {
+                    if (!$this->isTypeIterable($docblockTypehint)) {
                         if ($context instanceof ReflectionParameter) {
-                            return sprintf('%s, parameter $%s type is "array". Please provide a more specific @param annotation in the docblock. For instance: @param int[] $%s. Use @param mixed[] $%s if this is really an array of mixed values.', $this->getContext($context), $context->getName(), $context->getName(), $context->getName());
+                            return sprintf('%s, mismatching type-hints for parameter %s. PHP type hint is "array" and docblock type hint is %s.', $this->getContext($context), $context->getName(), (string)$docblockTypehint);
                         } else {
-                            return sprintf('%s, return type is "array". Please provide a more specific @return annotation. For instance: @return int[]. Use @return mixed[] if this is really an array of mixed values.', $this->getContext($context));
+                            return sprintf('%s, mismatching type-hints for return type. PHP type hint is "array" and docblock declared return type is %s.', $this->getContext($context), (string)$docblockTypehint);
+                        }
+                    }
+
+                    if ($docblockTypehint instanceof Array_ && $docblockTypehint->getValueType() instanceof Mixed_) {
+                        if (!$this->findExplicitMixedArray($context)) {
+                            if ($context instanceof ReflectionParameter) {
+                                return sprintf('%s, parameter $%s type is "array". Please provide a more specific @param annotation in the docblock. For instance: @param int[] $%s. Use @param mixed[] $%s if this is really an array of mixed values.', $this->getContext($context), $context->getName(), $context->getName(), $context->getName());
+                            } else {
+                                return sprintf('%s, return type is "array". Please provide a more specific @return annotation. For instance: @return int[]. Use @return mixed[] if this is really an array of mixed values.', $this->getContext($context));
+                            }
                         }
                     }
                 }

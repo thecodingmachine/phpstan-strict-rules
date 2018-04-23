@@ -97,3 +97,7 @@ function test12(TheCodingMachine\PHPStan\Rules\TypeHints\data\StubIterator $type
 function test13(ClassDoesNotExist $type_hintable): void
 {
 }
+
+function test14(TheCodingMachine\PHPStan\Rules\TypeHints\data\StubIterator $type_hintable): void
+{
+}
