@@ -101,3 +101,12 @@ function test13(ClassDoesNotExist $type_hintable): void
 function test14(TheCodingMachine\PHPStan\Rules\TypeHints\data\StubIterator $type_hintable): void
 {
 }
+
+/**
+ * Test that unparseable params are not triggering exceptions.
+ * @param array<string,string> $foo
+ * @return array<string,string>
+ */
+function test15(array $foo): array
+{
+}

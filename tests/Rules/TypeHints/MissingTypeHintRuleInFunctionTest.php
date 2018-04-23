@@ -81,7 +81,12 @@ class MissingTypeHintRuleInFunctionTest extends RuleTestCase
             [
                 'In function "test13", parameter $type_hintable type is type-hinted to "\ClassDoesNotExist" but the @param annotation says it is a "\DateTimeImmutable[]". Please fix the @param annotation.',
                 97,
+            ],
+            [
+                'In function "test15", for parameter $foo, invalid docblock @param encountered. "\array<string,string>" is not a valid Fqsen.',
+                110,
             ]
+
         ]);
     }
 }
