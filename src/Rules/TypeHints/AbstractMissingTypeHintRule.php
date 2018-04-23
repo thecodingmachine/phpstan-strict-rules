@@ -318,7 +318,8 @@ abstract class AbstractMissingTypeHintRule implements Rule
         // Manage interface/classes
         // Manage array of things => (cast to array)
 
-        if ($type instanceof Object_) {
+        // "object" type-hint is not available in PHP 7.1
+        if ($type instanceof Object_ && (string) $type !== 'object') {
             return ($isNullable?'?':'').((string)$type);
         }
 
