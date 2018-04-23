@@ -110,3 +110,11 @@ function test14(TheCodingMachine\PHPStan\Rules\TypeHints\data\StubIterator $type
 function test15(array $foo): array
 {
 }
+
+/**
+ * PHP 7.1 does not have object type hint so we should not ask for it.
+ * @param object $foo
+ */
+function test16($foo): void
+{
+}
