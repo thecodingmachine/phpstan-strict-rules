@@ -144,7 +144,13 @@ abstract class AbstractMissingTypeHintRule implements Rule
             $typeResolver = new \phpDocumentor\Reflection\TypeResolver();
             $phpTypeHint = $typeResolver->resolve((string) $reflectionPhpTypeHint);
         }
-        $docBlockTypeHints = $function->getDocBlockReturnTypes();
+        try {
+            $docBlockTypeHints = $function->getDocBlockReturnTypes();
+        } catch (\InvalidArgumentException $e) {
+            // If we cannot parse the doc block return, let's simply display no errors.
+            // This should be caught by another rule.
+            return null;
+        }
 
         // If there is a type-hint, we have nothing to say unless it is an array.
         if ($phpTypeHint !== null) {
