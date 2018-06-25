@@ -1,6 +1,6 @@
 <?php
 
-namespace TestCatch;
+namespace TestThrowException;
 
 class MyCatchException extends \Exception
 {

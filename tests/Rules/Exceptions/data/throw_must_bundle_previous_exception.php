@@ -1,6 +1,6 @@
 <?php
 
-namespace TestCatch;
+namespace TestThrowMustBundlePreviousException;
 
 class FooCatch
 {

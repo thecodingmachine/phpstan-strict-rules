@@ -10,13 +10,13 @@
         }
     ],
     "require": {
-        "php": ">=7.1",
-        "phpstan/phpstan": "^0.9",
-        "roave/better-reflection": "^2.0"
+        "php": "^7.1",
+        "phpstan/phpstan": "^0.10",
+        "roave/better-reflection": "^3.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "^6.2",
-        "satooshi/php-coveralls": "^1.0"
+        "phpunit/phpunit": "^7.1",
+        "php-coveralls/php-coveralls": "^2.1"
     },
     "autoload": {
         "psr-4": {
@@ -24,7 +24,10 @@
         }
     },
     "autoload-dev": {
-        "classmap": ["vendor/phpstan/phpstan/tests/PHPStan"],
+        "classmap": [
+            "tests/Rules/Exceptions/data/",
+            "tests/Rules/TypeHints/data/"
+        ],
         "psr-4": {
             "TheCodingMachine\\PHPStan\\": "tests/"
         }
@@ -34,7 +37,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "0.9-dev"
+            "dev-master": "0.10-dev"
         }
     }
 }
