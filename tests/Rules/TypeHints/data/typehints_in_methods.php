@@ -1,5 +1,9 @@
 <?php
 
+
+namespace TheCodingMachine\PHPStan\Rules\TypeHints\data;
+
+
 class Foo
 {
     public function test($no_type_hint): void

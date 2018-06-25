@@ -53,6 +53,6 @@ class MissingTypeHintInMethodRule extends AbstractMissingTypeHintRule
      */
     public function isReturnIgnored(Node $node): bool
     {
-        return isset(self::RETURN_BLACKLIST[$node->name]);
+        return isset(self::RETURN_BLACKLIST[$node->name->name]);
     }
 }

@@ -29,7 +29,7 @@ class ThrowMustBundlePreviousExceptionRule implements Rule
      */
     public function processNode(Node $node, Scope $scope): array
     {
-        $visitor = new class($node->var) extends NodeVisitorAbstract {
+        $visitor = new class($node->var->name) extends NodeVisitorAbstract {
             /**
              * @var string
              */

@@ -23,6 +23,7 @@ use PHPStan\Rules\Rule;
 use Roave\BetterReflection\BetterReflection;
 use Roave\BetterReflection\Reflection\ReflectionClass;
 use Roave\BetterReflection\Reflection\ReflectionFunction;
+use Roave\BetterReflection\Reflection\ReflectionFunctionAbstract;
 use Roave\BetterReflection\Reflection\ReflectionMethod;
 use Roave\BetterReflection\Reflection\ReflectionParameter;
 use Roave\BetterReflection\Reflector\Exception\IdentifierNotFound;
@@ -45,7 +46,7 @@ abstract class AbstractMissingTypeHintRule implements Rule
     abstract public function getNodeType(): string;
 
     /**
-     * @param ReflectionMethod|ReflectionFunction $reflection
+     * @param ReflectionFunctionAbstract|ReflectionParameter $reflection
      * @return string
      */
     abstract public function getContext($reflection): string;
