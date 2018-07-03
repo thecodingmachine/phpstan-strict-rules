@@ -3,32 +3,25 @@ declare(strict_types=1);
 
 namespace TheCodingMachine\PHPStan\Rules\TypeHints;
 
-use phpDocumentor\Reflection\DocBlockFactory;
-use phpDocumentor\Reflection\Type;
-use phpDocumentor\Reflection\Types\Array_;
-use phpDocumentor\Reflection\Types\Boolean;
-use phpDocumentor\Reflection\Types\Callable_;
-use phpDocumentor\Reflection\Types\Float_;
-use phpDocumentor\Reflection\Types\Integer;
-use phpDocumentor\Reflection\Types\Iterable_;
-use phpDocumentor\Reflection\Types\Mixed_;
-use phpDocumentor\Reflection\Types\Null_;
-use phpDocumentor\Reflection\Types\Object_;
-use phpDocumentor\Reflection\Types\Scalar;
-use phpDocumentor\Reflection\Types\String_;
+use PHPStan\Type\ArrayType;
+use PHPStan\Type\BooleanType;
+use PHPStan\Type\CallableType;
+use PHPStan\Type\FloatType;
+use PHPStan\Type\IntegerType;
+use PHPStan\Type\MixedType;
+use PHPStan\Type\NullType;
+use PHPStan\Type\ObjectType;
+use PHPStan\Type\ObjectWithoutClassType;
+use PHPStan\Type\StringType;
+use PHPStan\Type\Type;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Broker\Broker;
+use PHPStan\Reflection\ParametersAcceptorWithPhpDocs;
+use PHPStan\Reflection\Php\PhpParameterReflection;
 use PHPStan\Rules\Rule;
-use Roave\BetterReflection\BetterReflection;
-use Roave\BetterReflection\Reflection\ReflectionClass;
-use Roave\BetterReflection\Reflection\ReflectionFunction;
-use Roave\BetterReflection\Reflection\ReflectionFunctionAbstract;
-use Roave\BetterReflection\Reflection\ReflectionMethod;
-use Roave\BetterReflection\Reflection\ReflectionParameter;
-use Roave\BetterReflection\Reflector\Exception\IdentifierNotFound;
-use Roave\BetterReflection\TypesFinder\PhpDocumentor\NamespaceNodeToReflectionTypeContext;
-use Roave\BetterReflection\TypesFinder\ResolveTypes;
+use PHPStan\Type\UnionType;
+use PHPStan\Type\VerbosityLevel;
 
 abstract class AbstractMissingTypeHintRule implements Rule
 {
@@ -45,13 +38,11 @@ abstract class AbstractMissingTypeHintRule implements Rule
 
     abstract public function getNodeType(): string;
 
-    /**
-     * @param ReflectionFunctionAbstract|ReflectionParameter $reflection
-     * @return string
-     */
-    abstract public function getContext($reflection): string;
-
     abstract public function isReturnIgnored(Node $node): bool;
+
+    abstract protected function getReflection(Node\FunctionLike $function, Scope $scope, Broker $broker) : ParametersAcceptorWithPhpDocs;
+
+    abstract protected function shouldSkip(Node\FunctionLike $function, Scope $scope): bool;
 
     /**
      * @param \PhpParser\Node\Stmt\Function_|\PhpParser\Node\Stmt\ClassMethod $node
@@ -60,29 +51,22 @@ abstract class AbstractMissingTypeHintRule implements Rule
      */
     public function processNode(Node $node, Scope $scope): array
     {
-        // TODO: improve performance by caching better reflection results.
-        $finder = (new BetterReflection())->findReflectionsOnLine();
-
-        if ($node->getLine() < 0) {
+        /*if ($node->getLine() < 0) {
             // Fixes some problems with methods in anonymous class (the line number is poorly reported).
             return [];
-        }
+        }*/
 
-        $reflection = $finder($scope->getFile(), $node->getLine());
-
-        // If the method implements/extends another method, we have no choice on the signature so let's bypass this check.
-        if ($reflection instanceof ReflectionMethod && $this->isInherited($reflection)) {
+        if ($this->shouldSkip($node, $scope)) {
             return [];
         }
+
+        $parametersAcceptor = $this->getReflection($node, $scope, $this->broker);
 
         $errors = [];
 
-        if ($reflection === null) {
-            throw new \RuntimeException('Could not find item at '.$scope->getFile().':'.$node->getLine());
-        }
-
-        foreach ($reflection->getParameters() as $parameter) {
-            $result = $this->analyzeParameter($parameter);
+        foreach ($parametersAcceptor->getParameters() as $parameter) {
+            $debugContext = new ParameterDebugContext($scope, $node, $parameter);
+            $result = $this->analyzeParameter($debugContext, $parameter);
 
             if ($result !== null) {
                 $errors[] = $result;
@@ -90,7 +74,8 @@ abstract class AbstractMissingTypeHintRule implements Rule
         }
 
         if (!$this->isReturnIgnored($node)) {
-            $returnTypeError = $this->analyzeReturnType($reflection);
+            $debugContext = new FunctionDebugContext($scope, $node);
+            $returnTypeError = $this->analyzeReturnType($debugContext, $parametersAcceptor);
             if ($returnTypeError !== null) {
                 $errors[] = $returnTypeError;
             }
@@ -100,85 +85,80 @@ abstract class AbstractMissingTypeHintRule implements Rule
     }
 
     /**
-     * Analyzes a parameter and returns the error string if xomething goes wrong or null if everything is ok.
+     * Analyzes a parameter and returns the error string if something goes wrong or null if everything is ok.
      *
-     * @param ReflectionParameter $parameter
+     * @param PhpParameterReflection $parameter
      * @return null|string
      */
-    private function analyzeParameter(ReflectionParameter $parameter): ?string
+    private function analyzeParameter(DebugContextInterface $context, PhpParameterReflection $parameter): ?string
     {
-        $typeResolver = new \phpDocumentor\Reflection\TypeResolver();
+        //$typeResolver = new \phpDocumentor\Reflection\TypeResolver();
 
-        $phpTypeHint = $parameter->getType();
-        try {
-            $docBlockTypeHints = $parameter->getDocBlockTypes();
-        } catch (\InvalidArgumentException $e) {
+        $phpTypeHint = $parameter->getNativeType();
+        //try {
+            $docBlockTypeHints = $parameter->getPhpDocType();
+        /*} catch (\InvalidArgumentException $e) {
             return sprintf('%s, for parameter $%s, invalid docblock @param encountered. %s',
                 $this->getContext($parameter),
                 $parameter->getName(),
                 $e->getMessage()
             );
-        }
+        }*/
 
-        // If there is a type-hint, we have nothing to say unless it is an array.
-        if ($phpTypeHint !== null) {
-            $phpdocTypeHint = $typeResolver->resolve((string) $phpTypeHint);
+        if ($phpTypeHint instanceof MixedType && $phpTypeHint->isExplicitMixed() === false) {
+            return $this->analyzeWithoutTypehint($context, $parameter, $docBlockTypeHints);
+        } else {
+            // If there is a type-hint, we have nothing to say unless it is an array.
             if ($parameter->isVariadic()) {
-                $phpdocTypeHint = new Array_($phpdocTypeHint);
+                // Hack: wrap the native type in an array is variadic
+                $phpTypeHint = new ArrayType(new IntegerType(), $phpTypeHint);
             }
 
-            return $this->analyzeWithTypehint($parameter, $phpdocTypeHint, $docBlockTypeHints);
-        } else {
-            return $this->analyzeWithoutTypehint($parameter, $docBlockTypeHints);
+            return $this->analyzeWithTypehint($context, $phpTypeHint, $docBlockTypeHints);
         }
     }
 
     /**
-     * @param ReflectionFunction|ReflectionMethod $function
      * @return null|string
      */
-    private function analyzeReturnType($function): ?string
+    private function analyzeReturnType(DebugContextInterface $debugContext, ParametersAcceptorWithPhpDocs $function): ?string
     {
-        $reflectionPhpTypeHint = $function->getReturnType();
-        $phpTypeHint = null;
-        if ($reflectionPhpTypeHint !== null) {
-            $typeResolver = new \phpDocumentor\Reflection\TypeResolver();
-            $phpTypeHint = $typeResolver->resolve((string) $reflectionPhpTypeHint);
-        }
-        try {
-            $docBlockTypeHints = $function->getDocBlockReturnTypes();
-        } catch (\InvalidArgumentException $e) {
-            // If we cannot parse the doc block return, let's simply display no errors.
-            // This should be caught by another rule.
-            return null;
-        }
+        $phpTypeHint = $function->getNativeReturnType();
+        $docBlockTypeHints = $function->getPhpDocReturnType();
 
         // If there is a type-hint, we have nothing to say unless it is an array.
-        if ($phpTypeHint !== null) {
-            return $this->analyzeWithTypehint($function, $phpTypeHint, $docBlockTypeHints);
+        if ($phpTypeHint instanceof MixedType && $phpTypeHint->isExplicitMixed() === false) {
+            return $this->analyzeWithoutTypehint($debugContext, $function, $docBlockTypeHints);
         } else {
-            return $this->analyzeWithoutTypehint($function, $docBlockTypeHints);
+            return $this->analyzeWithTypehint($debugContext, $phpTypeHint, $docBlockTypeHints);
         }
     }
 
     /**
-     * @param ReflectionParameter|ReflectionMethod|ReflectionFunction $context
+     * @param DebugContextInterface $debugContext
      * @param Type $phpTypeHint
-     * @param Type[] $docBlockTypeHints
+     * @param Type $docBlockTypeHints
      * @return null|string
      */
-    private function analyzeWithTypehint($context, Type $phpTypeHint, array $docBlockTypeHints): ?string
+    private function analyzeWithTypehint(DebugContextInterface $debugContext, Type $phpTypeHint, Type $docBlockTypeHints): ?string
     {
         $docblockWithoutNullable = $this->typesWithoutNullable($docBlockTypeHints);
 
         if (!$this->isTypeIterable($phpTypeHint)) {
+            // FIXME: this should be handled with the "accepts" method of types (and actually, this is already triggered by PHPStan 0.10)
+
             // Let's detect mismatches between docblock and PHP typehint
-            foreach ($docblockWithoutNullable as $docblockTypehint) {
+            if ($docblockWithoutNullable instanceof UnionType) {
+                $docblocks = $docblockWithoutNullable->getTypes();
+            } else {
+                $docblocks = [$docblockWithoutNullable];
+            }
+            foreach ($docblocks as $docblockTypehint) {
                 if (get_class($docblockTypehint) !== get_class($phpTypeHint)) {
-                    if ($context instanceof ReflectionParameter) {
-                        return sprintf('%s, parameter $%s type is type-hinted to "%s" but the @param annotation says it is a "%s". Please fix the @param annotation.', $this->getContext($context), $context->getName(), (string) $phpTypeHint, (string) $docblockTypehint);
-                    } else {
-                        return sprintf('%s, return type is type-hinted to "%s" but the @return annotation says it is a "%s". Please fix the @return annotation.', $this->getContext($context), (string) $phpTypeHint, (string) $docblockTypehint);
+                    if ($debugContext instanceof ParameterDebugContext) {
+                        return sprintf('%s type is type-hinted to "%s" but the @param annotation says it is a "%s". Please fix the @param annotation.', (string) $debugContext, $phpTypeHint->describe(VerbosityLevel::typeOnly()), $docblockTypehint->describe(VerbosityLevel::typeOnly()));
+                    } elseif (!$docblockTypehint instanceof MixedType || $docblockTypehint->isExplicitMixed()) {
+                        return sprintf('%s return type is type-hinted to "%s" but the @return annotation says it is a "%s". Please fix the @return annotation.', (string) $debugContext, $phpTypeHint->describe(VerbosityLevel::typeOnly()), $docblockTypehint->describe(VerbosityLevel::typeOnly()));
                     }
                 }
             }
@@ -186,30 +166,33 @@ abstract class AbstractMissingTypeHintRule implements Rule
             return null;
         }
 
-        if ($phpTypeHint instanceof Array_) {
-            if (empty($docblockWithoutNullable)) {
-                if ($context instanceof ReflectionParameter) {
-                    return sprintf('%s, parameter $%s type is "array". Please provide a @param annotation to further specify the type of the array. For instance: @param int[] $%s', $this->getContext($context), $context->getName(), $context->getName());
+        if ($phpTypeHint instanceof ArrayType) {
+            if ($docblockWithoutNullable instanceof MixedType && !$docblockWithoutNullable->isExplicitMixed()) {
+                if ($debugContext instanceof ParameterDebugContext) {
+                    return sprintf('%s type is "array". Please provide a @param annotation to further specify the type of the array. For instance: @param int[] $%s', (string) $debugContext, $debugContext->getName());
                 } else {
-                    return sprintf('%s, return type is "array". Please provide a @param annotation to further specify the type of the array. For instance: @return int[]', $this->getContext($context));
+                    return sprintf('%s return type is "array". Please provide a @param annotation to further specify the type of the array. For instance: @return int[]', (string) $debugContext);
                 }
             } else {
-                foreach ($docblockWithoutNullable as $docblockTypehint) {
+                if ($docblockWithoutNullable instanceof UnionType) {
+                    $docblocks = $docblockWithoutNullable->getTypes();
+                } else {
+                    $docblocks = [$docblockWithoutNullable];
+                }
+                foreach ($docblocks as $docblockTypehint) {
                     if (!$this->isTypeIterable($docblockTypehint)) {
-                        if ($context instanceof ReflectionParameter) {
-                            return sprintf('%s, mismatching type-hints for parameter %s. PHP type hint is "array" and docblock type hint is %s.', $this->getContext($context), $context->getName(), (string)$docblockTypehint);
+                        if ($debugContext instanceof ParameterDebugContext) {
+                            return sprintf('%s mismatching type-hints for parameter %s. PHP type hint is "array" and docblock type hint is %s.', (string) $debugContext, $debugContext->getName(), $docblockTypehint->describe(VerbosityLevel::typeOnly()));
                         } else {
-                            return sprintf('%s, mismatching type-hints for return type. PHP type hint is "array" and docblock declared return type is %s.', $this->getContext($context), (string)$docblockTypehint);
+                            return sprintf('%s mismatching type-hints for return type. PHP type hint is "array" and docblock declared return type is %s.', (string) $debugContext, $docblockTypehint->describe(VerbosityLevel::typeOnly()));
                         }
                     }
 
-                    if ($docblockTypehint instanceof Array_ && $docblockTypehint->getValueType() instanceof Mixed_) {
-                        if (!$this->findExplicitMixedArray($context)) {
-                            if ($context instanceof ReflectionParameter) {
-                                return sprintf('%s, parameter $%s type is "array". Please provide a more specific @param annotation in the docblock. For instance: @param int[] $%s. Use @param mixed[] $%s if this is really an array of mixed values.', $this->getContext($context), $context->getName(), $context->getName(), $context->getName());
-                            } else {
-                                return sprintf('%s, return type is "array". Please provide a more specific @return annotation. For instance: @return int[]. Use @return mixed[] if this is really an array of mixed values.', $this->getContext($context));
-                            }
+                    if ($docblockTypehint instanceof ArrayType && $docblockTypehint->getKeyType() instanceof MixedType && $docblockTypehint->getItemType() instanceof MixedType && $docblockTypehint->getKeyType()->isExplicitMixed() && $docblockTypehint->getItemType()->isExplicitMixed()) {
+                        if ($debugContext instanceof ParameterDebugContext) {
+                            return sprintf('%s type is "array". Please provide a more specific @param annotation in the docblock. For instance: @param int[] $%s. Use @param mixed[] $%s if this is really an array of mixed values.', (string) $debugContext, $debugContext->getName(), $debugContext->getName());
+                        } else {
+                            return sprintf('%s return type is "array". Please provide a more specific @return annotation. For instance: @return int[]. Use @return mixed[] if this is really an array of mixed values.', (string) $debugContext);
                         }
                     }
                 }
@@ -221,7 +204,8 @@ abstract class AbstractMissingTypeHintRule implements Rule
 
     private function isTypeIterable(Type $phpTypeHint) : bool
     {
-        if ($phpTypeHint instanceof Array_ || $phpTypeHint instanceof Iterable_) {
+        return /*$phpTypeHint->isIterable()->maybe() ||*/ $phpTypeHint->isIterable()->yes();
+        /*if ($phpTypeHint instanceof Array_ || $phpTypeHint instanceof Iterable_) {
             return true;
         }
         if ($phpTypeHint instanceof Object_) {
@@ -237,48 +221,31 @@ abstract class AbstractMissingTypeHintRule implements Rule
             }
         }
 
-        return false;
+        return false;*/
     }
 
     /**
-     * @param ReflectionParameter|ReflectionMethod|ReflectionFunction $context
-     * @return bool
-     */
-    private function findExplicitMixedArray($context) : bool
-    {
-        if ($context instanceof ReflectionParameter) {
-            $context = $context->getDeclaringFunction();
-        }
-
-        $docComment = $context->getDocComment();
-
-        // Very approximate solution: let's find in the whole docblock whether there is a mixed[] value or not.
-        // TODO: improve this to target precisely the parameter or return type.
-        return strpos($docComment, 'mixed[]') !== false;
-    }
-
-    /**
-     * @param ReflectionParameter|ReflectionMethod|ReflectionFunction $context
-     * @param Type[] $docBlockTypeHints
+     * @param DebugContextInterface $context
+     * @param Type $docBlockTypeHints
      * @return null|string
      */
-    private function analyzeWithoutTypehint($context, array $docBlockTypeHints): ?string
+    private function analyzeWithoutTypehint(DebugContextInterface $debugContext, $context, Type $docBlockTypeHints): ?string
     {
-        if (empty($docBlockTypeHints)) {
-            if ($context instanceof ReflectionParameter) {
-                return sprintf('%s, parameter $%s has no type-hint and no @param annotation.', $this->getContext($context), $context->getName());
+        if ($docBlockTypeHints instanceof MixedType && $docBlockTypeHints->isExplicitMixed() === false) {
+            if ($context instanceof PhpParameterReflection) {
+                return sprintf('%s has no type-hint and no @param annotation.', (string) $debugContext);
             } else {
-                return sprintf('%s, there is no return type and no @return annotation.', $this->getContext($context));
+                return sprintf('%s there is no return type and no @return annotation.', (string) $debugContext);
             }
         }
 
         $nativeTypehint = $this->isNativelyTypehintable($docBlockTypeHints);
 
         if ($nativeTypehint !== null) {
-            if ($context instanceof ReflectionParameter) {
-                return sprintf('%s, parameter $%s can be type-hinted to "%s".', $this->getContext($context), $context->getName(), $nativeTypehint);
+            if ($context instanceof PhpParameterReflection) {
+                return sprintf('%s can be type-hinted to "%s".', (string) $debugContext, $nativeTypehint);
             } else {
-                return sprintf('%s, a "%s" return type can be added.', $this->getContext($context), $nativeTypehint);
+                return sprintf('%s a "%s" return type can be added.', (string) $debugContext, $nativeTypehint);
             }
         }
 
@@ -286,56 +253,67 @@ abstract class AbstractMissingTypeHintRule implements Rule
     }
 
     /**
-     * @param Type[] $docBlockTypeHints
+     * @param Type $docBlockTypeHints
      * @return string|null
      */
-    private function isNativelyTypehintable(array $docBlockTypeHints): ?string
+    private function isNativelyTypehintable(Type $docBlockTypeHints): ?string
     {
-        if (count($docBlockTypeHints) > 2) {
+        if ($docBlockTypeHints instanceof UnionType) {
+            $count = count($docBlockTypeHints->getTypes());
+        } else {
+            $count = 1;
+        }
+
+        if ($count > 2) {
             return null;
         }
         $isNullable = $this->isNullable($docBlockTypeHints);
-        if (count($docBlockTypeHints) === 2 && !$isNullable) {
+        if ($count === 2 && !$isNullable) {
             return null;
         }
 
-        $types = $this->typesWithoutNullable($docBlockTypeHints);
+        $type = $this->typesWithoutNullable($docBlockTypeHints);
         // At this point, there is at most one element here
-        if (empty($types)) {
+        /*if (empty($type)) {
+            return null;
+        }*/
+
+        //$type = $types[0];
+
+        // "object" type-hint is not available in PHP 7.1
+        if ($type instanceof ObjectWithoutClassType) {
+            // In PHP 7.2, this is true but not in PHP 7.1
             return null;
         }
 
-        $type = $types[0];
+        if ($type instanceof ObjectType) {
+            return ($isNullable?'?':'').'\\'.$type->describe(VerbosityLevel::typeOnly());
+        }
+
+        if ($type instanceof ArrayType) {
+            return ($isNullable?'?':'').'array';
+        }
 
         if ($this->isNativeType($type)) {
-            return ($isNullable?'?':'').((string)$type);
-        }
-
-        if ($type instanceof Array_) {
-            return ($isNullable?'?':'').'array';
+            return ($isNullable?'?':'').$type->describe(VerbosityLevel::typeOnly());
         }
 
         // TODO: more definitions to add here
         // Manage interface/classes
         // Manage array of things => (cast to array)
 
-        // "object" type-hint is not available in PHP 7.1
-        if ($type instanceof Object_ && (string) $type !== 'object') {
-            return ($isNullable?'?':'').((string)$type);
-        }
 
         return null;
     }
 
     private function isNativeType(Type $type): bool
     {
-        if ($type instanceof String_
-            || $type instanceof Integer
-            || $type instanceof Boolean
-            || $type instanceof Float_
-            || $type instanceof Scalar
-            || $type instanceof Callable_
-            || ((string) $type) === 'iterable'
+        if ($type instanceof StringType
+            || $type instanceof IntegerType
+            || $type instanceof BooleanType
+            || $type instanceof FloatType
+            || $type instanceof CallableType
+            || $type->isIterable()
         ) {
             return true;
         }
@@ -343,14 +321,16 @@ abstract class AbstractMissingTypeHintRule implements Rule
     }
 
     /**
-     * @param Type[] $docBlockTypeHints
+     * @param Type $docBlockTypeHints
      * @return bool
      */
-    private function isNullable(array $docBlockTypeHints): bool
+    private function isNullable(Type $docBlockTypeHints): bool
     {
-        foreach ($docBlockTypeHints as $docBlockTypeHint) {
-            if ($docBlockTypeHint instanceof Null_) {
-                return true;
+        if ($docBlockTypeHints instanceof UnionType) {
+            foreach ($docBlockTypeHints->getTypes() as $docBlockTypeHint) {
+                if ($docBlockTypeHint instanceof NullType) {
+                    return true;
+                }
             }
         }
         return false;
@@ -359,36 +339,20 @@ abstract class AbstractMissingTypeHintRule implements Rule
     /**
      * Removes "null" from the list of types.
      *
-     * @param Type[] $docBlockTypeHints
-     * @return Type[]
+     * @param Type $docBlockTypeHints
+     * @return Type
      */
-    private function typesWithoutNullable(array $docBlockTypeHints): array
+    private function typesWithoutNullable(Type $docBlockTypeHints): Type
     {
-        return array_values(array_filter($docBlockTypeHints, function ($item) {
-            return !$item instanceof Null_;
-        }));
-    }
-
-    private function isInherited(ReflectionMethod $method, ReflectionClass $class = null): bool
-    {
-        if ($class === null) {
-            $class = $method->getDeclaringClass();
-        }
-        $interfaces = $class->getInterfaces();
-        foreach ($interfaces as $interface) {
-            if ($interface->hasMethod($method->getName())) {
-                return true;
+        if ($docBlockTypeHints instanceof UnionType) {
+            $filteredTypes = array_values(array_filter($docBlockTypeHints->getTypes(), function (Type $item) {
+                return !$item instanceof NullType;
+            }));
+            if (\count($filteredTypes) === 1) {
+                return $filteredTypes[0];
             }
+            return new UnionType($filteredTypes);
         }
-
-        $parentClass = $class->getParentClass();
-        if ($parentClass !== null) {
-            if ($parentClass->hasMethod($method->getName())) {
-                return true;
-            }
-            return $this->isInherited($method, $parentClass);
-        }
-
-        return false;
+        return $docBlockTypeHints;
     }
 }

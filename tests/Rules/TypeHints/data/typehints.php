@@ -104,8 +104,8 @@ function test14(TheCodingMachine\PHPStan\Rules\TypeHints\data\StubIterator $type
 
 /**
  * Test that unparseable params are not triggering exceptions.
- * @param array<string,string> $foo
- * @return array<string,string>
+ * @param a{r(ra)é $foo
+ * @return a{r(ra)é
  */
 function test15(array $foo): array
 {
