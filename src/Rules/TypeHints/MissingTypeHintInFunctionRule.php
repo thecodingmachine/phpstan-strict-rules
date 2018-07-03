@@ -5,6 +5,7 @@ namespace TheCodingMachine\PHPStan\Rules\TypeHints;
 
 use PHPStan\Analyser\Scope;
 use PHPStan\Broker\Broker;
+use PHPStan\Reflection\ParametersAcceptor;
 use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Reflection\ParametersAcceptorWithPhpDocs;
 use PHPStan\Reflection\Php\PhpParameterReflection;
@@ -38,7 +39,8 @@ class MissingTypeHintInFunctionRule extends AbstractMissingTypeHintRule
         }
         $functionReflection = $broker->getCustomFunction($functionNameName, null);
         /** @var \PHPStan\Reflection\ParametersAcceptorWithPhpDocs $parametersAcceptor */
-        return ParametersAcceptorSelector::selectSingle($functionReflection->getVariants());
+        $parametersAcceptor = ParametersAcceptorSelector::selectSingle($functionReflection->getVariants());
+        return $parametersAcceptor;
     }
 
     protected function shouldSkip(Node\FunctionLike $function, Scope $scope): bool

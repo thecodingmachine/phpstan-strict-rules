@@ -3,11 +3,14 @@ declare(strict_types=1);
 
 namespace TheCodingMachine\PHPStan\Rules\TypeHints;
 
+use PHPStan\Reflection\Php\PhpFunctionReflection;
+use PHPStan\Reflection\Php\PhpMethodReflection;
 use PHPStan\Type\ArrayType;
 use PHPStan\Type\BooleanType;
 use PHPStan\Type\CallableType;
 use PHPStan\Type\FloatType;
 use PHPStan\Type\IntegerType;
+use PHPStan\Type\IterableType;
 use PHPStan\Type\MixedType;
 use PHPStan\Type\NullType;
 use PHPStan\Type\ObjectType;
@@ -106,7 +109,7 @@ abstract class AbstractMissingTypeHintRule implements Rule
         }*/
 
         if ($phpTypeHint instanceof MixedType && $phpTypeHint->isExplicitMixed() === false) {
-            return $this->analyzeWithoutTypehint($context, $parameter, $docBlockTypeHints);
+            return $this->analyzeWithoutTypehint($context, $docBlockTypeHints);
         } else {
             // If there is a type-hint, we have nothing to say unless it is an array.
             if ($parameter->isVariadic()) {
@@ -128,7 +131,7 @@ abstract class AbstractMissingTypeHintRule implements Rule
 
         // If there is a type-hint, we have nothing to say unless it is an array.
         if ($phpTypeHint instanceof MixedType && $phpTypeHint->isExplicitMixed() === false) {
-            return $this->analyzeWithoutTypehint($debugContext, $function, $docBlockTypeHints);
+            return $this->analyzeWithoutTypehint($debugContext, $docBlockTypeHints);
         } else {
             return $this->analyzeWithTypehint($debugContext, $phpTypeHint, $docBlockTypeHints);
         }
@@ -147,14 +150,20 @@ abstract class AbstractMissingTypeHintRule implements Rule
         if (!$this->isTypeIterable($phpTypeHint)) {
             // FIXME: this should be handled with the "accepts" method of types (and actually, this is already triggered by PHPStan 0.10)
 
+            if ($docBlockTypeHints instanceof MixedType && $docBlockTypeHints->isExplicitMixed() === false) {
+                // No docblock.
+                return null;
+            }
+
             // Let's detect mismatches between docblock and PHP typehint
             if ($docblockWithoutNullable instanceof UnionType) {
                 $docblocks = $docblockWithoutNullable->getTypes();
             } else {
                 $docblocks = [$docblockWithoutNullable];
             }
+            $phpTypeHintWithoutNullable = $this->typesWithoutNullable($phpTypeHint);
             foreach ($docblocks as $docblockTypehint) {
-                if (get_class($docblockTypehint) !== get_class($phpTypeHint)) {
+                if (get_class($docblockTypehint) !== get_class($phpTypeHintWithoutNullable)) {
                     if ($debugContext instanceof ParameterDebugContext) {
                         return sprintf('%s type is type-hinted to "%s" but the @param annotation says it is a "%s". Please fix the @param annotation.', (string) $debugContext, $phpTypeHint->describe(VerbosityLevel::typeOnly()), $docblockTypehint->describe(VerbosityLevel::typeOnly()));
                     } elseif (!$docblockTypehint instanceof MixedType || $docblockTypehint->isExplicitMixed()) {
@@ -225,14 +234,14 @@ abstract class AbstractMissingTypeHintRule implements Rule
     }
 
     /**
-     * @param DebugContextInterface $context
+     * @param DebugContextInterface $debugContext
      * @param Type $docBlockTypeHints
      * @return null|string
      */
-    private function analyzeWithoutTypehint(DebugContextInterface $debugContext, $context, Type $docBlockTypeHints): ?string
+    private function analyzeWithoutTypehint(DebugContextInterface $debugContext, Type $docBlockTypeHints): ?string
     {
         if ($docBlockTypeHints instanceof MixedType && $docBlockTypeHints->isExplicitMixed() === false) {
-            if ($context instanceof PhpParameterReflection) {
+            if ($debugContext instanceof ParameterDebugContext) {
                 return sprintf('%s has no type-hint and no @param annotation.', (string) $debugContext);
             } else {
                 return sprintf('%s there is no return type and no @return annotation.', (string) $debugContext);
@@ -242,7 +251,7 @@ abstract class AbstractMissingTypeHintRule implements Rule
         $nativeTypehint = $this->isNativelyTypehintable($docBlockTypeHints);
 
         if ($nativeTypehint !== null) {
-            if ($context instanceof PhpParameterReflection) {
+            if ($debugContext instanceof ParameterDebugContext) {
                 return sprintf('%s can be type-hinted to "%s".', (string) $debugContext, $nativeTypehint);
             } else {
                 return sprintf('%s a "%s" return type can be added.', (string) $debugContext, $nativeTypehint);
@@ -313,7 +322,7 @@ abstract class AbstractMissingTypeHintRule implements Rule
             || $type instanceof BooleanType
             || $type instanceof FloatType
             || $type instanceof CallableType
-            || $type->isIterable()
+            || $type instanceof IterableType
         ) {
             return true;
         }

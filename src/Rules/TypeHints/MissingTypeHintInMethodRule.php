@@ -60,7 +60,8 @@ class MissingTypeHintInMethodRule extends AbstractMissingTypeHintRule
             throw new \PHPStan\ShouldNotHappenException();
         }
         /** @var \PHPStan\Reflection\ParametersAcceptorWithPhpDocs $parametersAcceptor */
-        return ParametersAcceptorSelector::selectSingle($nativeMethod->getVariants());
+        $parametersAcceptor = ParametersAcceptorSelector::selectSingle($nativeMethod->getVariants());
+        return $parametersAcceptor;
     }
 
     protected function shouldSkip(Node\FunctionLike $function, Scope $scope): bool

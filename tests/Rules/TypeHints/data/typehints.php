@@ -118,3 +118,17 @@ function test15(array $foo): array
 function test16($foo): void
 {
 }
+
+/**
+ * This should trigger no warning
+ */
+function test17(string $foo): void
+{
+}
+
+/**
+ * @return null|string
+ */
+function test18(): ?string
+{
+}
