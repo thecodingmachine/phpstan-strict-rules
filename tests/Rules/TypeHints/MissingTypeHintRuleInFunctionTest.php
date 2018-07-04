@@ -59,7 +59,7 @@ class MissingTypeHintRuleInFunctionTest extends RuleTestCase
                 38,
             ],
             [
-                'In function "mismatch", parameter $param type is type-hinted to "string" but the @param annotation says it is a "int". Please fix the @param annotation.',
+                'In function "mismatch", parameter $param type is type-hinted to "string|null" but the @param annotation says it is a "int". Please fix the @param annotation.',
                 46,
             ],
             [
@@ -75,15 +75,19 @@ class MissingTypeHintRuleInFunctionTest extends RuleTestCase
                 62,
             ],
             [
-                'In function "test10", for parameter $id, invalid docblock @param encountered. Attempted to resolve "" but it appears to be empty',
+                'In function "test10", parameter $id has no type-hint and no @param annotation.',
                 76,
             ],
             [
-                'In function "test13", parameter $type_hintable type is type-hinted to "\ClassDoesNotExist" but the @param annotation says it is a "\DateTimeImmutable[]". Please fix the @param annotation.',
+                'In function "test13", parameter $type_hintable type is type-hinted to "ClassDoesNotExist" but the @param annotation says it is a "array<DateTimeImmutable>". Please fix the @param annotation.',
                 97,
             ],
             [
-                'In function "test15", for parameter $foo, invalid docblock @param encountered. "\array<string,string>" is not a valid Fqsen.',
+                'In function "test15", parameter $foo type is "array". Please provide a @param annotation to further specify the type of the array. For instance: @param int[] $foo',
+                110,
+            ],
+            [
+                'In function "test15", mismatching type-hints for return type. PHP type hint is "array" and docblock declared return type is a.',
                 110,
             ]
 

@@ -3,6 +3,12 @@
 
 namespace TheCodingMachine\PHPStan\Rules\TypeHints;
 
+use PHPStan\Analyser\Scope;
+use PHPStan\Broker\Broker;
+use PHPStan\Reflection\ParametersAcceptor;
+use PHPStan\Reflection\ParametersAcceptorSelector;
+use PHPStan\Reflection\ParametersAcceptorWithPhpDocs;
+use PHPStan\Reflection\Php\PhpParameterReflection;
 use Roave\BetterReflection\Reflection\ReflectionFunction;
 use Roave\BetterReflection\Reflection\ReflectionFunctionAbstract;
 use Roave\BetterReflection\Reflection\ReflectionMethod;
@@ -16,19 +22,28 @@ class MissingTypeHintInFunctionRule extends AbstractMissingTypeHintRule
         return Node\Stmt\Function_::class;
     }
 
-    /**
-     * @param ReflectionFunctionAbstract|ReflectionParameter $reflection
-     * @return string
-     */
-    public function getContext($reflection): string
+    public function isReturnIgnored(Node $node): bool
     {
-        if ($reflection instanceof ReflectionParameter) {
-            $reflection = $reflection->getDeclaringFunction();
-        }
-        return 'In function "'.$reflection->getName().'"';
+        return false;
     }
 
-    public function isReturnIgnored(Node $node): bool
+    protected function getReflection(Node\FunctionLike $function, Scope $scope, Broker $broker) : ParametersAcceptorWithPhpDocs
+    {
+        $functionName = $function->name->name;
+        if (isset($function->namespacedName)) {
+            $functionName = (string) $function->namespacedName;
+        }
+        $functionNameName = new Node\Name($functionName);
+        if (!$broker->hasCustomFunction($functionNameName, null)) {
+            throw new \RuntimeException("Cannot find function '$functionName'");
+        }
+        $functionReflection = $broker->getCustomFunction($functionNameName, null);
+        /** @var \PHPStan\Reflection\ParametersAcceptorWithPhpDocs $parametersAcceptor */
+        $parametersAcceptor = ParametersAcceptorSelector::selectSingle($functionReflection->getVariants());
+        return $parametersAcceptor;
+    }
+
+    protected function shouldSkip(Node\FunctionLike $function, Scope $scope): bool
     {
         return false;
     }

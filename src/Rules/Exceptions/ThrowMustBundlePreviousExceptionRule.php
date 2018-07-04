@@ -63,7 +63,7 @@ class ThrowMustBundlePreviousExceptionRule implements Rule
             }
 
             /**
-             * @return array
+             * @return Node\Stmt\Throw_[]
              */
             public function getUnusedThrows(): array
             {
