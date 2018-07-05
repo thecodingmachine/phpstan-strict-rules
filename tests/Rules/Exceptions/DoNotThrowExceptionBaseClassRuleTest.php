@@ -4,7 +4,6 @@ namespace PHPStan\Rules\Exceptions;
 
 use PHPStan\Testing\RuleTestCase;
 use TheCodingMachine\PHPStan\Rules\Exceptions\DoNotThrowExceptionBaseClassRule;
-use TheCodingMachine\PHPStan\Rules\Exceptions\EmptyExceptionRule;
 
 class DoNotThrowExceptionBaseClassRuleTest extends RuleTestCase
 {

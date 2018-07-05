@@ -33,11 +33,18 @@ This is a PHP 7.1+ rule:
 
 [More about type-hinting related rules...](doc/typehinting_rules.md)
 
+### Superglobal related rules
+
+- The use of `$_GET`, `$_POST`, `$_FILES`, `$_COOKIE`, `$_SESSION`, `$_REQUEST` is forbidden. You should instead use 
+  your framework's request/session object.
+- Superglobal usage is still tolerated at the root scope (because it is typically used once in `index.php` to initialize
+  PSR-7 request object)
+
 ### Work-in-progress
 
-    // Don't use superglobals (__GET __POST)...
     // Always provide a "default" in a switch statement (and throw an exception if unexpected)
     // Never use public properties
+    // Never use globals
 
 ## Installation
 
