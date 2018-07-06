@@ -9,6 +9,7 @@ use PHPStan\Reflection\FunctionReflection;
 use PHPStan\Reflection\MethodReflection;
 use PHPStan\Rules\Rule;
 use PHPStan\ShouldNotHappenException;
+use TheCodingMachine\PHPStan\Utils\PrefixGenerator;
 
 /**
  * This rule checks that no superglobals are used in code.
@@ -39,14 +40,7 @@ class NoSuperglobalsRule implements Rule
         ];
 
         if (\in_array($node->name, $forbiddenGlobals, true)) {
-            $prefix = '';
-            if ($function instanceof MethodReflection) {
-                $prefix = 'In method "'.$function->getDeclaringClass()->getName().'::'.$function->getName().'", ';
-            } elseif ($function instanceof FunctionReflection) {
-                $prefix = 'In function "'.$function->getName().'", ';
-            }
-
-            return [$prefix.'you should not use the $'.$node->name.' superglobal. You should instead rely on your framework that provides you with a "request" object (for instance a PSR-7 RequestInterface or a Symfony Request).'];
+            return [PrefixGenerator::generatePrefix($scope).'you should not use the $'.$node->name.' superglobal. You should instead rely on your framework that provides you with a "request" object (for instance a PSR-7 RequestInterface or a Symfony Request).'];
         }
 
         return [];

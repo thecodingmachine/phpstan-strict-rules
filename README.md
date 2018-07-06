@@ -40,9 +40,12 @@ This is a PHP 7.1+ rule:
 - Superglobal usage is still tolerated at the root scope (because it is typically used once in `index.php` to initialize
   PSR-7 request object)
 
+### Condition related rules
+
+- Switch statements should always check for unexpected values by [implementing a default case (and throwing an exception)](http://bestpractices.thecodingmachine.com/php/defensive_programming.html#always-check-for-unexpected-values)
+
 ### Work-in-progress
 
-    // Always provide a "default" in a switch statement (and throw an exception if unexpected)
     // Never use public properties
     // Never use globals
 
