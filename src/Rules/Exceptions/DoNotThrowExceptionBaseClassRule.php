@@ -26,6 +26,11 @@ class DoNotThrowExceptionBaseClassRule implements Rule
      */
     public function processNode(Node $node, Scope $scope): array
     {
+        if (!$node->expr instanceof Node\Expr\New_) {
+            // Only catch "throw new ..."
+            return [];
+        }
+
         $type = $scope->getType($node->expr);
 
         if ($type instanceof ObjectType) {
