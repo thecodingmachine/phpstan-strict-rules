@@ -13,6 +13,7 @@ use PHPStan\Analyser\Scope;
 use PHPStan\Broker\Broker;
 use PHPStan\Rules\Rule;
 use RuntimeException;
+use TheCodingMachine\PHPStan\Utils\PrefixGenerator;
 use Throwable;
 
 /**
@@ -75,7 +76,7 @@ class MustRethrowRule implements Rule
         $errors = [];
 
         if (!$visitor->isThrowFound()) {
-            $errors[] = sprintf('Caught \Exception, \Throwable or \RuntimeException must be rethrown. Either catch a more specific exception or add a "throw" clause in the "catch" to propagate the exception.');
+            $errors[] = sprintf('%scaught \Exception, \Throwable or \RuntimeException must be rethrown. Either catch a more specific exception or add a "throw" clause in the "catch" to propagate the exception.', PrefixGenerator::generatePrefix($scope));
         }
 
         return $errors;

@@ -26,10 +26,12 @@ try {
     $foo = 42;
 }
 
-try {
-} catch (\RuntimeException $e) {
-    // Do something
-    $foo = 42;
+function foo() {
+    try {
+    } catch (\RuntimeException $e) {
+        // Do something
+        $foo = 42;
+    }
 }
 
 try {

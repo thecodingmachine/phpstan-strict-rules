@@ -12,6 +12,10 @@ services:
     tags:
       - phpstan.rules.rule
   -
+    class: TheCodingMachine\PHPStan\Rules\Exceptions\MustRethrowRule
+    tags:
+      - phpstan.rules.rule
+  -
     class: TheCodingMachine\PHPStan\Rules\TypeHints\MissingTypeHintInFunctionRule
     tags:
       - phpstan.rules.rule

@@ -17,16 +17,16 @@ class MustRethrowRuleTest extends RuleTestCase
     {
         $this->analyse([__DIR__ . '/data/must_rethrow.php'], [
             [
-                'Caught \Exception, \Throwable or \RuntimeException must be rethrown. Either catch a more specific exception or add a "throw" clause in the "catch" to propagate the exception.',
+                'caught \Exception, \Throwable or \RuntimeException must be rethrown. Either catch a more specific exception or add a "throw" clause in the "catch" to propagate the exception.',
                 18,
             ],
             [
-                'Caught \Exception, \Throwable or \RuntimeException must be rethrown. Either catch a more specific exception or add a "throw" clause in the "catch" to propagate the exception.',
+                'caught \Exception, \Throwable or \RuntimeException must be rethrown. Either catch a more specific exception or add a "throw" clause in the "catch" to propagate the exception.',
                 24,
             ],
             [
-                'Caught \Exception, \Throwable or \RuntimeException must be rethrown. Either catch a more specific exception or add a "throw" clause in the "catch" to propagate the exception.',
-                30,
+                'In function "TestCatch\foo", caught \Exception, \Throwable or \RuntimeException must be rethrown. Either catch a more specific exception or add a "throw" clause in the "catch" to propagate the exception.',
+                31,
             ],
         ]);
     }
