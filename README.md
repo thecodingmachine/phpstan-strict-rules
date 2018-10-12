@@ -22,6 +22,7 @@ They are more "strict" than the default PHPStan rules and some may be controvers
 - You should not throw the "Exception" base class directly [but throw a sub-class instead](http://bestpractices.thecodingmachine.com/php/error_handling.html#subtyping-exceptions).
 - You should not have empty catch statements
 - When throwing an exception inside a catch block, [you should pass the catched exception as the "previous" exception](http://bestpractices.thecodingmachine.com/php/error_handling.html#wrapping-an-exception-do-not-lose-the-previous-exception)
+- If you catch a `Throwable`, an `Exception` or a `RuntimeException`, you must rethrow the exception.
 
 ### Type-hinting related rules
 
