@@ -35,15 +35,15 @@ class MustRethrowRule implements Rule
     public function processNode(Node $node, Scope $scope): array
     {
         // Let's only apply the filter to \Exception, \RuntimeException or \Throwable
-        $elected = false;
+        $exceptionType = null;
         foreach ($node->types as $type) {
             if (in_array((string)$type, [Exception::class, RuntimeException::class, Throwable::class], true)) {
-                $elected = true;
+                $exceptionType = (string)$type;
                 break;
             }
         }
 
-        if (!$elected) {
+        if ($exceptionType === null) {
             return [];
         }
 
@@ -76,7 +76,7 @@ class MustRethrowRule implements Rule
         $errors = [];
 
         if (!$visitor->isThrowFound()) {
-            $errors[] = sprintf('%scaught \Exception, \Throwable or \RuntimeException must be rethrown. Either catch a more specific exception or add a "throw" clause in the "catch" to propagate the exception.', PrefixGenerator::generatePrefix($scope));
+            $errors[] = sprintf('%scaught "%s" must be rethrown. Either catch a more specific exception or add a "throw" clause in the "catch" block to propagate the exception.', PrefixGenerator::generatePrefix($scope), $exceptionType);
         }
 
         return $errors;
