@@ -76,7 +76,7 @@ class MustRethrowRule implements Rule
         $errors = [];
 
         if (!$visitor->isThrowFound()) {
-            $errors[] = sprintf('%scaught "%s" must be rethrown. Either catch a more specific exception or add a "throw" clause in the "catch" block to propagate the exception.', PrefixGenerator::generatePrefix($scope), $exceptionType);
+            $errors[] = sprintf('%scaught "%s" must be rethrown. Either catch a more specific exception or add a "throw" clause in the "catch" block to propagate the exception. More info: http://bit.ly/failloud', PrefixGenerator::generatePrefix($scope), $exceptionType);
         }
 
         return $errors;

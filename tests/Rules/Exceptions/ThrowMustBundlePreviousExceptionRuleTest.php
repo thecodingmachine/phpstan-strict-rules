@@ -16,7 +16,7 @@ class ThrowMustBundlePreviousExceptionRuleTest extends RuleTestCase
     {
         $this->analyse([__DIR__ . '/data/throw_must_bundle_previous_exception.php'], [
             [
-                'Thrown exceptions in a catch block must bundle the previous exception (see throw statement line 28)',
+                'Thrown exceptions in a catch block must bundle the previous exception (see throw statement line 28). More info: http://bit.ly/bundleexception',
                 26,
             ],
         ]);

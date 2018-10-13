@@ -40,7 +40,7 @@ class NoSuperglobalsRule implements Rule
         ];
 
         if (\in_array($node->name, $forbiddenGlobals, true)) {
-            return [PrefixGenerator::generatePrefix($scope).'you should not use the $'.$node->name.' superglobal. You should instead rely on your framework that provides you with a "request" object (for instance a PSR-7 RequestInterface or a Symfony Request).'];
+            return [PrefixGenerator::generatePrefix($scope).'you should not use the $'.$node->name.' superglobal. You should instead rely on your framework that provides you with a "request" object (for instance a PSR-7 RequestInterface or a Symfony Request). More info: http://bit.ly/nosuperglobals'];
         }
 
         return [];
