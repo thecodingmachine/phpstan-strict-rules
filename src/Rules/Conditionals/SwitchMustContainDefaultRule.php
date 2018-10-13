@@ -38,7 +38,7 @@ class SwitchMustContainDefaultRule implements Rule
         }
 
         if (!$defaultFound) {
-            $errors[] = sprintf(PrefixGenerator::generatePrefix($scope).'switch statement does not have a "default" case. If your code is supposed to enter at least one "case" or another, consider adding a "default" case that throws an exception.');
+            $errors[] = sprintf(PrefixGenerator::generatePrefix($scope).'switch statement does not have a "default" case. If your code is supposed to enter at least one "case" or another, consider adding a "default" case that throws an exception. More info: http://bit.ly/switchdefault');
         }
 
         return $errors;

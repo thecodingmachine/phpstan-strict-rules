@@ -80,7 +80,7 @@ class ThrowMustBundlePreviousExceptionRule implements Rule
         $errors = [];
 
         foreach ($visitor->getUnusedThrows() as $throw) {
-            $errors[] = sprintf('Thrown exceptions in a catch block must bundle the previous exception (see throw statement line %d)', $throw->getLine());
+            $errors[] = sprintf('Thrown exceptions in a catch block must bundle the previous exception (see throw statement line %d). More info: http://bit.ly/bundleexception', $throw->getLine());
         }
 
         return $errors;

@@ -38,7 +38,7 @@ class DoNotThrowExceptionBaseClassRule implements Rule
 
             if ($class === 'Exception') {
                 return [
-                    'Do not throw the \Exception base class. Instead, extend the \Exception base class'
+                    'Do not throw the \Exception base class. Instead, extend the \Exception base class. More info: http://bit.ly/subtypeexception'
                 ];
             }
         }
