@@ -19,43 +19,43 @@ class MissingTypeHintRuleInFunctionTest extends RuleTestCase
 
         $this->analyse([__DIR__ . '/data/typehints.php'], [
             [
-                'In function "test", parameter $no_type_hint has no type-hint and no @param annotation.',
+                'In function "test", parameter $no_type_hint has no type-hint and no @param annotation. More info: http://bit.ly/usetypehint',
                 3,
             ],
             [
-                'In function "test", there is no return type and no @return annotation.',
+                'In function "test", there is no return type and no @return annotation. More info: http://bit.ly/usetypehint',
                 3,
             ],
             [
-                'In function "test2", parameter $type_hintable can be type-hinted to "?string".',
+                'In function "test2", parameter $type_hintable can be type-hinted to "?string". More info: http://bit.ly/usetypehint',
                 11,
             ],
             [
-                'In function "test2", a "string" return type can be added.',
+                'In function "test2", a "string" return type can be added. More info: http://bit.ly/usetypehint',
                 11,
             ],
             [
-                'In function "test3", parameter $type_hintable can be type-hinted to "\DateTimeInterface".',
+                'In function "test3", parameter $type_hintable can be type-hinted to "\DateTimeInterface". More info: http://bit.ly/usetypehint',
                 19,
             ],
             [
-                'In function "test3", a "\DateTimeInterface" return type can be added.',
+                'In function "test3", a "\DateTimeInterface" return type can be added. More info: http://bit.ly/usetypehint',
                 19,
             ],
             [
-                'In function "test4", parameter $type_hintable can be type-hinted to "array".',
+                'In function "test4", parameter $type_hintable can be type-hinted to "array". More info: http://bit.ly/usetypehint',
                 27,
             ],
             [
-                'In function "test4", a "array" return type can be added.',
+                'In function "test4", a "array" return type can be added. More info: http://bit.ly/usetypehint',
                 27,
             ],
             [
-                'In function "test6", parameter $better_type_hint type is "array". Please provide a @param annotation to further specify the type of the array. For instance: @param int[] $better_type_hint',
+                'In function "test6", parameter $better_type_hint type is "array". Please provide a @param annotation to further specify the type of the array. For instance: @param int[] $better_type_hint. More info: http://bit.ly/typehintarray',
                 38,
             ],
             [
-                'In function "test6", return type is "array". Please provide a @return annotation to further specify the type of the array. For instance: @return int[]',
+                'In function "test6", return type is "array". Please provide a @return annotation to further specify the type of the array. For instance: @return int[]. More info: http://bit.ly/typehintarray',
                 38,
             ],
             [
@@ -67,15 +67,15 @@ class MissingTypeHintRuleInFunctionTest extends RuleTestCase
                 46,
             ],
             [
-                'In function "test8", parameter $any_array type is "array". Please provide a more specific @param annotation in the docblock. For instance: @param int[] $any_array. Use @param mixed[] $any_array if this is really an array of mixed values.',
+                'In function "test8", parameter $any_array type is "array". Please provide a more specific @param annotation in the docblock. For instance: @param int[] $any_array. Use @param mixed[] $any_array if this is really an array of mixed values. More info: http://bit.ly/typehintarray',
                 62,
             ],
             [
-                'In function "test8", return type is "array". Please provide a more specific @return annotation. For instance: @return int[]. Use @return mixed[] if this is really an array of mixed values.',
+                'In function "test8", return type is "array". Please provide a more specific @return annotation. For instance: @return int[]. Use @return mixed[] if this is really an array of mixed values. More info: http://bit.ly/typehintarray',
                 62,
             ],
             [
-                'In function "test10", parameter $id has no type-hint and no @param annotation.',
+                'In function "test10", parameter $id has no type-hint and no @param annotation. More info: http://bit.ly/usetypehint',
                 76,
             ],
             [
@@ -83,7 +83,7 @@ class MissingTypeHintRuleInFunctionTest extends RuleTestCase
                 97,
             ],
             [
-                'In function "test15", parameter $foo type is "array". Please provide a @param annotation to further specify the type of the array. For instance: @param int[] $foo',
+                'In function "test15", parameter $foo type is "array". Please provide a @param annotation to further specify the type of the array. For instance: @param int[] $foo. More info: http://bit.ly/typehintarray',
                 110,
             ],
             [

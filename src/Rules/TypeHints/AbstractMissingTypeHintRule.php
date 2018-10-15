@@ -178,9 +178,9 @@ abstract class AbstractMissingTypeHintRule implements Rule
         if ($phpTypeHint instanceof ArrayType) {
             if ($docblockWithoutNullable instanceof MixedType && !$docblockWithoutNullable->isExplicitMixed()) {
                 if ($debugContext instanceof ParameterDebugContext) {
-                    return sprintf('%s type is "array". Please provide a @param annotation to further specify the type of the array. For instance: @param int[] $%s', (string) $debugContext, $debugContext->getName());
+                    return sprintf('%s type is "array". Please provide a @param annotation to further specify the type of the array. For instance: @param int[] $%s. More info: http://bit.ly/typehintarray', (string) $debugContext, $debugContext->getName());
                 } else {
-                    return sprintf('%s return type is "array". Please provide a @return annotation to further specify the type of the array. For instance: @return int[]', (string) $debugContext);
+                    return sprintf('%s return type is "array". Please provide a @return annotation to further specify the type of the array. For instance: @return int[]. More info: http://bit.ly/typehintarray', (string) $debugContext);
                 }
             } else {
                 if ($docblockWithoutNullable instanceof UnionType) {
@@ -199,9 +199,9 @@ abstract class AbstractMissingTypeHintRule implements Rule
 
                     if ($docblockTypehint instanceof ArrayType && $docblockTypehint->getKeyType() instanceof MixedType && $docblockTypehint->getItemType() instanceof MixedType && $docblockTypehint->getKeyType()->isExplicitMixed() && $docblockTypehint->getItemType()->isExplicitMixed()) {
                         if ($debugContext instanceof ParameterDebugContext) {
-                            return sprintf('%s type is "array". Please provide a more specific @param annotation in the docblock. For instance: @param int[] $%s. Use @param mixed[] $%s if this is really an array of mixed values.', (string) $debugContext, $debugContext->getName(), $debugContext->getName());
+                            return sprintf('%s type is "array". Please provide a more specific @param annotation in the docblock. For instance: @param int[] $%s. Use @param mixed[] $%s if this is really an array of mixed values. More info: http://bit.ly/typehintarray', (string) $debugContext, $debugContext->getName(), $debugContext->getName());
                         } else {
-                            return sprintf('%s return type is "array". Please provide a more specific @return annotation. For instance: @return int[]. Use @return mixed[] if this is really an array of mixed values.', (string) $debugContext);
+                            return sprintf('%s return type is "array". Please provide a more specific @return annotation. For instance: @return int[]. Use @return mixed[] if this is really an array of mixed values. More info: http://bit.ly/typehintarray', (string) $debugContext);
                         }
                     }
                 }
@@ -242,9 +242,9 @@ abstract class AbstractMissingTypeHintRule implements Rule
     {
         if ($docBlockTypeHints instanceof MixedType && $docBlockTypeHints->isExplicitMixed() === false) {
             if ($debugContext instanceof ParameterDebugContext) {
-                return sprintf('%s has no type-hint and no @param annotation.', (string) $debugContext);
+                return sprintf('%s has no type-hint and no @param annotation. More info: http://bit.ly/usetypehint', (string) $debugContext);
             } else {
-                return sprintf('%s there is no return type and no @return annotation.', (string) $debugContext);
+                return sprintf('%s there is no return type and no @return annotation. More info: http://bit.ly/usetypehint', (string) $debugContext);
             }
         }
 
@@ -252,9 +252,9 @@ abstract class AbstractMissingTypeHintRule implements Rule
 
         if ($nativeTypehint !== null) {
             if ($debugContext instanceof ParameterDebugContext) {
-                return sprintf('%s can be type-hinted to "%s".', (string) $debugContext, $nativeTypehint);
+                return sprintf('%s can be type-hinted to "%s". More info: http://bit.ly/usetypehint', (string) $debugContext, $nativeTypehint);
             } else {
-                return sprintf('%s a "%s" return type can be added.', (string) $debugContext, $nativeTypehint);
+                return sprintf('%s a "%s" return type can be added. More info: http://bit.ly/usetypehint', (string) $debugContext, $nativeTypehint);
             }
         }
 
