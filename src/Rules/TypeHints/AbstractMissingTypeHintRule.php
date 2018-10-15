@@ -180,7 +180,7 @@ abstract class AbstractMissingTypeHintRule implements Rule
                 if ($debugContext instanceof ParameterDebugContext) {
                     return sprintf('%s type is "array". Please provide a @param annotation to further specify the type of the array. For instance: @param int[] $%s', (string) $debugContext, $debugContext->getName());
                 } else {
-                    return sprintf('%s return type is "array". Please provide a @param annotation to further specify the type of the array. For instance: @return int[]', (string) $debugContext);
+                    return sprintf('%s return type is "array". Please provide a @return annotation to further specify the type of the array. For instance: @return int[]', (string) $debugContext);
                 }
             } else {
                 if ($docblockWithoutNullable instanceof UnionType) {

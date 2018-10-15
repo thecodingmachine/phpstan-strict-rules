@@ -55,7 +55,7 @@ class MissingTypeHintRuleInFunctionTest extends RuleTestCase
                 38,
             ],
             [
-                'In function "test6", return type is "array". Please provide a @param annotation to further specify the type of the array. For instance: @return int[]',
+                'In function "test6", return type is "array". Please provide a @return annotation to further specify the type of the array. For instance: @return int[]',
                 38,
             ],
             [
