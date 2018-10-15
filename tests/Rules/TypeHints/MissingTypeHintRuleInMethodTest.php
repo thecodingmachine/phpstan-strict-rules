@@ -19,11 +19,11 @@ class MissingTypeHintRuleInMethodTest extends RuleTestCase
 
         $this->analyse([__DIR__ . '/data/typehints_in_methods.php'], [
             [
-                'In method "TheCodingMachine\PHPStan\Rules\TypeHints\data\Foo::test", parameter $no_type_hint has no type-hint and no @param annotation.',
+                'In method "TheCodingMachine\PHPStan\Rules\TypeHints\data\Foo::test", parameter $no_type_hint has no type-hint and no @param annotation. More info: http://bit.ly/usetypehint',
                 9,
             ],
             [
-                'In method "TheCodingMachine\PHPStan\Rules\TypeHints\data\BazClass::notInherited", parameter $no_type_hint has no type-hint and no @param annotation.',
+                'In method "TheCodingMachine\PHPStan\Rules\TypeHints\data\BazClass::notInherited", parameter $no_type_hint has no type-hint and no @param annotation. More info: http://bit.ly/usetypehint',
                 37,
             ],
 
