@@ -132,3 +132,10 @@ function test17(string $foo): void
 function test18(): ?string
 {
 }
+
+/**
+ * @return void
+ */
+function test19()
+{
+}
