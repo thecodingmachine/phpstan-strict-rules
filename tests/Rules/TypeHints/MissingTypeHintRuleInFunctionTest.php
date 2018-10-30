@@ -89,6 +89,10 @@ class MissingTypeHintRuleInFunctionTest extends RuleTestCase
             [
                 'In function "test15", mismatching type-hints for return type. PHP type hint is "array" and docblock declared return type is a.',
                 110,
+            ],
+            [
+                'In function "test19", a "void" return type can be added. More info: http://bit.ly/usetypehint',
+                139,
             ]
 
         ]);

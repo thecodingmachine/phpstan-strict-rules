@@ -25,6 +25,7 @@ use PHPStan\Reflection\Php\PhpParameterReflection;
 use PHPStan\Rules\Rule;
 use PHPStan\Type\UnionType;
 use PHPStan\Type\VerbosityLevel;
+use PHPStan\Type\VoidType;
 
 abstract class AbstractMissingTypeHintRule implements Rule
 {
@@ -323,6 +324,7 @@ abstract class AbstractMissingTypeHintRule implements Rule
             || $type instanceof FloatType
             || $type instanceof CallableType
             || $type instanceof IterableType
+            || $type instanceof VoidType
         ) {
             return true;
         }
