@@ -16,11 +16,11 @@ class EmptyExceptionRuleTest extends RuleTestCase
     {
         $this->analyse([__DIR__ . '/data/catch.php'], [
             [
-                'Empty catch block',
+                'Empty catch block. If you are sure this is meant to be empty, please add a "// @ignoreException" comment in the catch block.',
                 14,
             ],
             [
-                'Empty catch block',
+                'Empty catch block. If you are sure this is meant to be empty, please add a "// @ignoreException" comment in the catch block.',
                 24,
             ],
         ]);
