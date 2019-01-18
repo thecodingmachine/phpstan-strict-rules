@@ -24,3 +24,8 @@ try {
 } catch (\Exception $e) {
     // Do nothing
 }
+
+try {
+} catch (\Exception $e) {
+    // @ignoreException
+}

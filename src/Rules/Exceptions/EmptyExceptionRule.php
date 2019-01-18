@@ -8,6 +8,7 @@ use PhpParser\Node\Stmt\Catch_;
 use PHPStan\Analyser\Scope;
 use PHPStan\Broker\Broker;
 use PHPStan\Rules\Rule;
+use function strpos;
 
 class EmptyExceptionRule implements Rule
 {
@@ -25,7 +26,7 @@ class EmptyExceptionRule implements Rule
     {
         if ($this->isEmpty($node->stmts)) {
             return [
-                'Empty catch block'
+                'Empty catch block. If you are sure this is meant to be empty, please add a "// @ignoreException" comment in the catch block.'
             ];
         }
 
@@ -41,6 +42,12 @@ class EmptyExceptionRule implements Rule
         foreach ($stmts as $stmt) {
             if (!$stmt instanceof Node\Stmt\Nop) {
                 return false;
+            } else {
+                foreach ($stmt->getComments() as $comment) {
+                    if (strpos($comment->getText(), '@ignoreException') !== false) {
+                        return false;
+                    }
+                }
             }
         }
 
