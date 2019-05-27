@@ -69,11 +69,13 @@ abstract class AbstractMissingTypeHintRule implements Rule
         $errors = [];
 
         foreach ($parametersAcceptor->getParameters() as $parameter) {
-            $debugContext = new ParameterDebugContext($scope, $node, $parameter);
-            $result = $this->analyzeParameter($debugContext, $parameter);
+            if ($parameter instanceof PhpParameterReflection) {
+                $debugContext = new ParameterDebugContext($scope, $node, $parameter);
+                $result = $this->analyzeParameter($debugContext, $parameter);
 
-            if ($result !== null) {
-                $errors[] = $result;
+                if ($result !== null) {
+                    $errors[] = $result;
+                }
             }
         }
 
