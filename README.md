@@ -54,15 +54,21 @@ This is a PHP 7.1+ rule:
 
 We assume that [PHPStan](https://github.com/phpstan/phpstan) is already installed in your project.
 
-Let's add this package:
+To use this extension, require it in [Composer](https://getcomposer.org/):
 
 ```bash
 composer require --dev thecodingmachine/phpstan-strict-rules
 ```
 
-Now, edit your `phpstan.neon` file and add these rules:
+If you also install [phpstan/extension-installer](https://github.com/phpstan/extension-installer) then you're all set!
+
+<details>
+  <summary>Manual installation</summary>
+
+If you don't want to use `phpstan/extension-installer`, include phpstan-strict-rules.neon in your project's PHPStan config:
 
 ```yml
 includes:
     - vendor/thecodingmachine/phpstan-strict-rules/phpstan-strict-rules.neon
 ```
+</details>
