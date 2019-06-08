@@ -1,7 +1,7 @@
 {
     "name": "thecodingmachine/phpstan-strict-rules",
     "description": "A set of additional rules for PHPStan based on best practices followed at TheCodingMachine",
-    "type": "library",
+    "type": "phpstan-extension",
     "license": "MIT",
     "authors": [
         {
