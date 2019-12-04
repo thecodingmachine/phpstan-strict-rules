@@ -11,6 +11,8 @@ use PHPStan\Type\ObjectType;
 /**
  * This rule checks that the base \Exception class is never thrown. Instead, developers should subclass the \Exception
  * base class and throw the sub-type.
+ *
+ * @implements Rule<Node\Stmt\Throw_>
  */
 class DoNotThrowExceptionBaseClassRule implements Rule
 {

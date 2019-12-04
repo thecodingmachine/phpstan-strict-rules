@@ -13,6 +13,8 @@ use TheCodingMachine\PHPStan\Utils\PrefixGenerator;
 
 /**
  * This rule checks that no superglobals are used in code.
+ *
+ * @implements Rule<Node\Expr\Variable>
  */
 class NoSuperglobalsRule implements Rule
 {

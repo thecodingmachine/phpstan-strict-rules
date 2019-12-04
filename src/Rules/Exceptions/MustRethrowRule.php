@@ -19,6 +19,8 @@ use Throwable;
 /**
  * When catching \Exception, \RuntimeException or \Throwable, the exception MUST be thrown again
  * (unless you are developing an exception handler...)
+ *
+ * @implements Rule<Catch_>
  */
 class MustRethrowRule implements Rule
 {
@@ -49,6 +51,9 @@ class MustRethrowRule implements Rule
 
         // Let's visit and find a throw.
         $visitor = new class() extends NodeVisitorAbstract {
+            /**
+             * @var bool
+             */
             private $throwFound = false;
 
             public function leaveNode(Node $node)
@@ -56,6 +61,7 @@ class MustRethrowRule implements Rule
                 if ($node instanceof Node\Stmt\Throw_) {
                     $this->throwFound = true;
                 }
+                return null;
             }
 
             /**
