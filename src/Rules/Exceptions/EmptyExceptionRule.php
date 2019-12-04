@@ -10,6 +10,9 @@ use PHPStan\Broker\Broker;
 use PHPStan\Rules\Rule;
 use function strpos;
 
+/**
+ * @implements Rule<Catch_>
+ */
 class EmptyExceptionRule implements Rule
 {
     public function getNodeType(): string

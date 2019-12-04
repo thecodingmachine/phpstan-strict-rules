@@ -14,6 +14,8 @@ use PHPStan\Rules\Rule;
 /**
  * When throwing into a catch block, checks that the previous exception is passed to the new "throw" clause
  * (the initial stack trace must not be lost).
+ *
+ * @implements Rule<Catch_>
  */
 class ThrowMustBundlePreviousExceptionRule implements Rule
 {
@@ -34,7 +36,13 @@ class ThrowMustBundlePreviousExceptionRule implements Rule
              * @var string
              */
             private $catchedVariableName;
+            /**
+             * @var int
+             */
             private $exceptionUsedCount = 0;
+            /**
+             * @var Node\Stmt\Throw_[]
+             */
             private $unusedThrows = [];
 
             public function __construct(string $catchedVariableName)
@@ -48,6 +56,7 @@ class ThrowMustBundlePreviousExceptionRule implements Rule
                     if ($node->name === $this->catchedVariableName) {
                         $this->exceptionUsedCount++;
                     }
+                    return null;
                 }
 
                 // If the variable is used in the context of a method call (like $e->getMessage()), the exception is not passed as a "previous exception".
@@ -60,6 +69,7 @@ class ThrowMustBundlePreviousExceptionRule implements Rule
                 if ($node instanceof Node\Stmt\Throw_ && $this->exceptionUsedCount === 0) {
                     $this->unusedThrows[] = $node;
                 }
+                return null;
             }
 
             /**

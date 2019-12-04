@@ -13,6 +13,8 @@ use TheCodingMachine\PHPStan\Utils\PrefixGenerator;
 
 /**
  * A switch statement must always contain a "default" statement.
+ *
+ * @implements Rule<Switch_>
  */
 class SwitchMustContainDefaultRule implements Rule
 {

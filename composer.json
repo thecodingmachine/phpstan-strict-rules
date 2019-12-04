@@ -11,7 +11,7 @@
     ],
     "require": {
         "php": "^7.1",
-        "phpstan/phpstan": "^0.11.7"
+        "phpstan/phpstan": "^0.12"
     },
     "require-dev": {
         "phpunit/phpunit": "^7.1",
@@ -24,19 +24,18 @@
     },
     "autoload-dev": {
         "classmap": [
-            "tests/Rules/Exceptions/data/",
-            "tests/Rules/TypeHints/data/"
+            "tests/Rules/Exceptions/data/"
         ],
         "psr-4": {
             "TheCodingMachine\\PHPStan\\": "tests/"
         }
     },
     "scripts": {
-        "phpstan": "phpstan analyse src -c phpstan.neon --level=5 --no-progress -vvv"
+        "phpstan": "phpstan analyse src -c phpstan.neon --level=6 --no-progress -vvv"
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "0.10-dev"
+            "dev-master": "0.12-dev"
         },
         "phpstan": {
             "includes": [

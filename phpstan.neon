@@ -1,5 +1,2 @@
-parameters:
-    ignoreErrors:
-     - '#Access to an undefined property PhpParser\\Node\\FunctionLike::\$name.#'
 includes:
     - phpstan-strict-rules.neon

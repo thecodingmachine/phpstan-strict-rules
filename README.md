@@ -24,16 +24,6 @@ They are more "strict" than the default PHPStan rules and some may be controvers
 - When throwing an exception inside a catch block, [you should pass the catched exception as the "previous" exception](http://bestpractices.thecodingmachine.com/php/error_handling.html#wrapping-an-exception-do-not-lose-the-previous-exception)
 - If you catch a `Throwable`, an `Exception` or a `RuntimeException`, you must rethrow the exception.
 
-### Type-hinting related rules
-
-This is a PHP 7.1+ rule:
-
-- You should use type-hinting when possible
-- If not possible, you should use a Docblock to specify the type
-- If type-hinting against an array, you should use a Docblock to further explain the content of the array
-
-[More about type-hinting related rules...](doc/typehinting_rules.md)
-
 ### Superglobal related rules
 
 - The use of [`$_GET`, `$_POST`, `$_FILES`, `$_COOKIE`, `$_SESSION`, `$_REQUEST` is forbidden](http://bestpractices.thecodingmachine.com/php/organize_your_code.html#stop-using-superglobals-).

@@ -16,14 +16,6 @@ services:
     tags:
       - phpstan.rules.rule
   -
-    class: TheCodingMachine\PHPStan\Rules\TypeHints\MissingTypeHintInFunctionRule
-    tags:
-      - phpstan.rules.rule
-  -
-    class: TheCodingMachine\PHPStan\Rules\TypeHints\MissingTypeHintInMethodRule
-    tags:
-      - phpstan.rules.rule
-  -
     class: TheCodingMachine\PHPStan\Rules\Superglobals\NoSuperglobalsRule
     tags:
       - phpstan.rules.rule
