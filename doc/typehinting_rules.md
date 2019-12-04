@@ -24,8 +24,8 @@ function foo($no_type_hint)
 
 will yield 2 warnings:
 
-    In function "test", parameter $no_type_hint has no type-hint and no @param annotation.
-    In function "test", there is no return type and no @return annotation.
+    In function "foo", parameter $no_type_hint has no type-hint and no @param annotation.
+    In function "foo", there is no return type and no @return annotation.
     
 You can fix this waring like this:
 
