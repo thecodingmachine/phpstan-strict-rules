@@ -10,7 +10,7 @@
 TheCodingMachine's additional rules for PHPStan
 ===============================================
 
-This package contains a set of rules to be added to the [wonderful PHPStan static analyzer](https://github.com/phpstan/phpstan).
+This package contains a set of rules to be added to the [wonderful PHPStan static analyzer](https://phpstan.org/).
 
 Those rules come from [TheCodingMachine best practices](http://bestpractices.thecodingmachine.com/).
 They are more "strict" than the default PHPStan rules and some may be controversial. We use those at TheCodingMachine, have found them to help us in our daily work, and ask anyone working with us to follow them.
@@ -42,7 +42,7 @@ They are more "strict" than the default PHPStan rules and some may be controvers
 
 ## Installation
 
-We assume that [PHPStan](https://github.com/phpstan/phpstan) is already installed in your project.
+We assume that [PHPStan](https://phpstan.org/) is already installed in your project.
 
 To use this extension, require it in [Composer](https://getcomposer.org/):
 
