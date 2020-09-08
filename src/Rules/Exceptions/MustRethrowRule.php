@@ -6,9 +6,12 @@ namespace TheCodingMachine\PHPStan\Rules\Exceptions;
 use Exception;
 use function in_array;
 use PhpParser\Node;
+use PhpParser\NodeFinder;
 use PhpParser\Node\Stmt\Catch_;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitorAbstract;
+use PhpParser\Node\Expr\Variable;
+use PhpParser\Node\Expr\StaticCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Broker\Broker;
 use PHPStan\Rules\Rule;
@@ -49,15 +52,34 @@ class MustRethrowRule implements Rule
             return [];
         }
 
+        $exceptionVarName = $node->var->name;
+
         // Let's visit and find a throw.
-        $visitor = new class() extends NodeVisitorAbstract {
+        $visitor = new class($exceptionVarName)  extends NodeVisitorAbstract {
             /**
              * @var bool
              */
             private $throwFound = false;
 
+            /**
+             * @var bool
+             */
+            private $throwFoundProbably = false;
+
+            private $exceptionVarName;
+
+            public function __construct(string $exceptionVarName)
+            {
+                $this->exceptionVarName = $exceptionVarName;
+            }
+
             public function leaveNode(Node $node)
             {
+                // Only rethrow through static methods are allowed
+                if ($node instanceof StaticCall) {
+                    $this->throwFoundProbably = $this->isProbablyAThrow($node);
+                }
+
                 if ($node instanceof Node\Stmt\Throw_) {
                     $this->throwFound = true;
                 }
@@ -71,6 +93,27 @@ class MustRethrowRule implements Rule
             {
                 return $this->throwFound;
             }
+
+            /**
+             * @return bool
+             */
+            public function isThrowProbablyFound(): bool
+            {
+                return $this->throwFoundProbably;
+            }
+
+            private function isProbablyAThrow(Node $node)
+            {
+                if (!$args = $node->args) {
+                    return false;
+                }
+
+                $varArgs = array_filter($args, function ($arg) {
+                    return $arg->value instanceof Variable && $arg->value->name === $this->exceptionVarName ;
+                });
+
+                return 0 !== count($varArgs);
+            }
         };
 
         $traverser = new NodeTraverser();
@@ -81,7 +124,7 @@ class MustRethrowRule implements Rule
 
         $errors = [];
 
-        if (!$visitor->isThrowFound()) {
+        if (!$visitor->isThrowFound() && !$visitor->isThrowProbablyFound()) {
             $errors[] = sprintf('%scaught "%s" must be rethrown. Either catch a more specific exception or add a "throw" clause in the "catch" block to propagate the exception. More info: http://bit.ly/failloud', PrefixGenerator::generatePrefix($scope), $exceptionType);
         }
 
