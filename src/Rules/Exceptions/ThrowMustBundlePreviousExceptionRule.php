@@ -45,7 +45,7 @@ class ThrowMustBundlePreviousExceptionRule implements Rule
              */
             private $unusedThrows = [];
 
-            public function __construct(string $catchedVariableName)
+            public function __construct(?string $catchedVariableName)
             {
                 $this->catchedVariableName = $catchedVariableName;
             }
@@ -64,6 +64,10 @@ class ThrowMustBundlePreviousExceptionRule implements Rule
                     if ($node->var instanceof Node\Expr\Variable && $node->var->name === $this->catchedVariableName) {
                         $this->exceptionUsedCount--;
                     }
+                }
+
+                if (PHP_VERSION_ID >= 80000 && is_null($this->catchedVariableName)) {
+                    $this->exceptionUsedCount--;
                 }
 
                 if ($node instanceof Node\Stmt\Throw_ && $this->exceptionUsedCount === 0) {
