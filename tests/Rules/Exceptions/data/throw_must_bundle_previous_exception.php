@@ -27,3 +27,9 @@ try {
     // This is not okay
     throw new \Exception('New exception '.$e->getMessage());
 }
+
+try {
+}catch (\Exception) {
+    // This is okay
+    throw new \Exception();
+}
