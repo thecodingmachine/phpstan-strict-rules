@@ -33,3 +33,9 @@ try {
     // This is okay
     throw new \Exception();
 }
+
+try {
+} catch (\Exception $e) {
+    // This is not okay
+    throw new $e;
+}
