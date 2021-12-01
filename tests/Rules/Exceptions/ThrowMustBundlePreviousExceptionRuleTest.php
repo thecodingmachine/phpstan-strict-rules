@@ -19,6 +19,10 @@ class ThrowMustBundlePreviousExceptionRuleTest extends RuleTestCase
                 'Thrown exceptions in a catch block must bundle the previous exception (see throw statement line 28). More info: http://bit.ly/bundleexception',
                 26,
             ],
+            [
+                'Thrown exceptions in a catch block must bundle the previous exception (see throw statement line 40). More info: http://bit.ly/bundleexception',
+                38,
+            ],
         ]);
     }
 }
