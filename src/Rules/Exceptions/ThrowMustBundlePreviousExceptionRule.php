@@ -56,6 +56,9 @@ class ThrowMustBundlePreviousExceptionRule implements Rule
                     if ($node->name === $this->catchedVariableName) {
                         $this->exceptionUsedCount++;
                     }
+                    if ($node->getAttribute('parent') instanceof Node\Expr\New_) {
+                        $this->exceptionUsedCount--;
+                    }
                     return null;
                 }
 
