@@ -6,25 +6,25 @@ namespace TheCodingMachine\PHPStan\Rules\Exceptions;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
-use PHPStan\Type\ObjectType;
+use PHPStan\Rules\RuleErrorBuilder;
 
 /**
  * This rule checks that the base \Exception class is never thrown. Instead, developers should subclass the \Exception
  * base class and throw the sub-type.
  *
- * @implements Rule<Node\Stmt\Throw_>
+ * @implements Rule<Node\Expr\Throw_>
  */
 class DoNotThrowExceptionBaseClassRule implements Rule
 {
     public function getNodeType(): string
     {
-        return Node\Stmt\Throw_::class;
+        return Node\Expr\Throw_::class;
     }
 
     /**
-     * @param \PhpParser\Node\Stmt\Throw_ $node
+     * @param \PhpParser\Node\Expr\Throw_ $node
      * @param \PHPStan\Analyser\Scope $scope
-     * @return string[]
+     * @return \PHPStan\Rules\RuleError[]
      */
     public function processNode(Node $node, Scope $scope): array
     {
@@ -35,14 +35,13 @@ class DoNotThrowExceptionBaseClassRule implements Rule
 
         $type = $scope->getType($node->expr);
 
-        if ($type instanceof ObjectType) {
-            $class = $type->getClassName();
-
-            if ($class === 'Exception') {
-                return [
-                    'Do not throw the \Exception base class. Instead, extend the \Exception base class. More info: http://bit.ly/subtypeexception'
-                ];
-            }
+        if (\in_array('Exception', $type->getObjectClassNames(), true)) {
+            return [
+                RuleErrorBuilder::message('Do not throw the \Exception base class.')
+                    ->identifier('thecodingmachine.exceptionBaseClassThrown')
+                    ->tip('Instead, extend the \Exception base class. More info: http://bit.ly/subtypeexception')
+                    ->build()
+            ];
         }
 
         return [];
