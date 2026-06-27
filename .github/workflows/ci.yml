@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  tests:
+    name: PHP ${{ matrix.php-version }} ${{ matrix.composer-flags }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        php-version:
+          - "8.2"
+          - "8.5"
+        composer-flags:
+          - ""
+          - "--prefer-lowest"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          coverage: none
+
+      - name: Cache Composer packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.composer/cache
+          key: ${{ runner.os }}-php-${{ matrix.php-version }}-composer-${{ matrix.composer-flags }}
+          restore-keys: |
+            ${{ runner.os }}-php-${{ matrix.php-version }}-composer-
+
+      - name: Install dependencies
+        run: composer update --no-interaction --no-progress --optimize-autoloader --prefer-source ${{ matrix.composer-flags }}
+
+      - name: Run tests
+        run: vendor/bin/phpunit
+
+      - name: Run PHPStan
+        run: composer phpstan
