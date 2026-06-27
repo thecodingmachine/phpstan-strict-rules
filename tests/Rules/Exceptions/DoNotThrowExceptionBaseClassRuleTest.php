@@ -16,7 +16,7 @@ class DoNotThrowExceptionBaseClassRuleTest extends RuleTestCase
     {
         $this->analyse([__DIR__ . '/data/throw_exception.php'], [
             [
-                'Do not throw the \Exception base class. Instead, extend the \Exception base class. More info: http://bit.ly/subtypeexception',
+                "Do not throw the \\Exception base class.\n    💡 Instead, extend the \\Exception base class. More info: http://bit.ly/subtypeexception",
                 16,
             ],
         ]);

@@ -6,8 +6,8 @@ namespace TheCodingMachine\PHPStan\Rules\Exceptions;
 use PhpParser\Node;
 use PhpParser\Node\Stmt\Catch_;
 use PHPStan\Analyser\Scope;
-use PHPStan\Broker\Broker;
 use PHPStan\Rules\Rule;
+use PHPStan\Rules\RuleErrorBuilder;
 use function strpos;
 
 /**
@@ -23,13 +23,16 @@ class EmptyExceptionRule implements Rule
     /**
      * @param \PhpParser\Node\Stmt\Catch_ $node
      * @param \PHPStan\Analyser\Scope $scope
-     * @return string[]
+     * @return \PHPStan\Rules\RuleError[]
      */
     public function processNode(Node $node, Scope $scope): array
     {
         if ($this->isEmpty($node->stmts)) {
             return [
-                'Empty catch block. If you are sure this is meant to be empty, please add a "// @ignoreException" comment in the catch block.'
+                RuleErrorBuilder::message('Empty catch block.')
+                    ->identifier('thecodingmachine.emptyCatch')
+                    ->tip('If you are sure this is meant to be empty, please add a "// @ignoreException" comment in the catch block.')
+                    ->build()
             ];
         }
 
